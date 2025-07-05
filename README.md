@@ -16,15 +16,12 @@ If they are not installed, please install from R CRAN `install.packages("package
 
 ## R codes for the estimation of the examples
 
-- [Example in the main text](example.R)
+- Reproducible R coeds are in folder \application
 
-- [Example in the supplementary file](example-supp.R)
 
-## R codes for generating plots and tables
+## R codes for simulation
 
-- [Example in the main text](plot.R)
+- Reproducible R coeds are in folder \simulation
 
-- [Example in the supplementary file](plot-supp.R)
 
-R codes of the models with/without publication bias are in folder [Rfunc](Rfunc/); 
-the estimated results are saved in R data in folder [Rdata](Rdata/).
+
