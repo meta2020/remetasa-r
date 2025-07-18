@@ -4,6 +4,8 @@ library(kableExtra)
 source("Rfn/set.R")
 
 set$t.tau=round(set$t.tau^2,1)
+set$grp.r=sprintf("%d:1", set$grp.r)
+set$pmax=sprintf("[%.2f, %.2f]", set$pmax, set$pmin)
 
 set[,-4]%>%kbl(., 
          format = "html",
