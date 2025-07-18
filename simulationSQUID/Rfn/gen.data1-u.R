@@ -1,17 +1,6 @@
 ## Generate meta-analysis according to the HN-GLMM 
 ## N are sampled from uniform distributions
 
-# s=10
-# n_min=40
-# n_max=90
-# gr=1
-# theta=-2
-# tau=0.05
-# rho=0.8
-# y_min=0
-# y_max=10
-# Pnmax = 0.9999
-# Pnmin = 0.2
 
 gen.data1.u = function(
     s, 
@@ -38,7 +27,6 @@ gen.data1.u = function(
   yi  = runif(s, min =y_min, max = y_max) %>% round()
   yi[which(yi>ni)]=ni[which(yi>ni)]
 
-  # yi = BiasedUrn::rFNCHypergeo(nran=s, m1=n1[i], m2=n0[i], n=yi[i], odds=exp(thetai))
   # y1i = sapply(1:s, function(i) MCMCpack::rnoncenhypergeom(1, n1i[i], n0i[i], yi[i], exp(thetai[i])))
   y1i = sapply(1:s, function(i) BiasedUrn::rFNCHypergeo(nran=1, m1=n1i[i], m2=n0i[i], n=yi[i], odds=exp(thetai[i])))
   y0i = yi- y1i 

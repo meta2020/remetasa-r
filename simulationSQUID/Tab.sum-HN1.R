@@ -5,16 +5,17 @@ source("Rfn/set.R")
 rtimes=1000
 ## create a summary table
 t.mu=set$t.theta[1]
-S=50
+S=15
 
 CP.sum=NULL
 theta.sum=NULL
 tau.sum=NULL
+n.sum=NULL
 cv.sum=NULL
 
 nset=nrow(set)
 for(i in 1:nset){
-  load(paste0("res-all-HN1U/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GBN/data-set-",i,"-S",S,".RData"))
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(11, 10, rtimes),
           dimnames = list(colnames(DATA),rownames(DATA)[1:10],c(1:rtimes)))
@@ -39,8 +40,8 @@ for(i in 1:nset){
   CP.sum=rbind(CP.sum, colMeans(CP, na.rm = T))
   
   theta.sum = rbind(theta.sum, colMeans(mu, na.rm = T))
-  tau.sum   = rbind(tau.sum, colMeans(mu, na.rm = T))
-  n.sum     = rbind(tau.sum, colMeans(mu, na.rm = T))
+  tau.sum   = rbind(tau.sum, colMeans(tau, na.rm = T))
+  n.sum     = rbind(n.sum, colMeans(N, na.rm = T))
   cv.sum    = rbind(cv.sum, colMeans(CV, na.rm = T))
 }
 ## 1:1 set with biased and adjusted
@@ -63,16 +64,18 @@ pt[-seq(1,18,6)]=""
 grp=sprintf("%d:1",set$grp)
 grp[-seq(1,18,3)]=""
 
-DF = cbind.data.frame(pt, grp, tau2=(set$t.tau)^2, POP=PM.sp,PB=BIAS.sp,SA=SA.sp)
+DF = cbind.data.frame(pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1),
+                      POP=PM.sp,PB=BIAS.sp,SA=SA.sp)
 
-DF.cv = cbind.data.frame(pt, grp, tau2=(set$t.tau)^2, 100-cv.sum*100)
+DF.cv = cbind.data.frame(pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1), 
+                         100-cv.sum*100)
 rownames(DF.cv)=NULL
 
 DF%>%kbl(., 
          format = "html",
          longtable = F, 
          booktabs = T, 
-         col.names = c("Patients","T:C","$\\tau^2$",
+         col.names = c("Patients","T:C","$\\tau^2$","N",
                        "NN$_P$", "HN$_P$", "BN$_P$", 
                        "NN$_O$", "HN$_O$", "BN$_O$", 
                        "C-N (CP)", "C-S (CP)", 

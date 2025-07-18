@@ -6,17 +6,20 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
+rtimes=2
 
 ## SIMULATION 
 ncores = min(76, parallel::detectCores())
 cl = parallel::makeCluster(ncores, "SOCK")
 doSNOW::registerDoSNOW(cl)
 
+message("start")
+
 ##-- Simulation 1: HN model based -------
 set.seed(2025)
 for(S in s){
 for(i in 1:nrow(set)){ 
-  DATA = foreach(r=1:1000, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
+  DATA = foreach(r=1:rtimes, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
 
     set.gr = set[i,]
     pmax = set.gr$pmax
@@ -158,15 +161,15 @@ for(i in 1:nrow(set)){
 
   }
   save(DATA,file = paste0("res-HN1/data-set-",i,"-S",S,".RData"))
-  
-}}
+  message(paste0("Finish-HN-",S,"-",i))
+# }}
 
 ##-- Simulation 2: 2-group binomial model based -------
 
-set.seed(2025)
-for(S in s){
-  for(i in 1:nrow(set)){ 
-    DATA = foreach(r=1:1000, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
+# set.seed(2025)
+# for(S in s){
+  # for(i in 1:nrow(set)){ 
+    DATA = foreach(r=1:rtimes, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
       
       set.gr = set[i,]
       pmax = set.gr$pmax
@@ -307,15 +310,15 @@ for(S in s){
       
     }
     save(DATA,file = paste0("res-2GBN/data-set-",i,"-S",S,".RData"))
-    
-  }}
+    message(paste0("Finish-2GBN-",S,"-",i))
+  # }}
 
 ##-- Simulation 3: BN (proportion) model based -------
 
-set.seed(2025)
-for(S in s){
-  for(i in 1:nrow(set)){ 
-    DATA = foreach(r=1:1000, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
+# set.seed(2025)
+# for(S in s){
+  # for(i in 1:nrow(set)){ 
+    DATA = foreach(r=1:rtimes, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
       
       set.gr = set[i,]
       pmax = set.gr$pmax
@@ -441,9 +444,10 @@ for(S in s){
       
     }
     save(DATA,file = paste0("res-BNprop/data-set-",i,"-S",S,".RData"))
-    
+    message(paste0("Finish-BNprop-",S,"-",i))
   }}
 
 
 parallel::stopCluster(cl)
+message(paste0("finish"))
 

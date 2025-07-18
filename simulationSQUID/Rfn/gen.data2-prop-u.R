@@ -9,7 +9,7 @@ gen.data2.su = function(
     y_min,y_max,
     Pnmax, Pnmin){
   
-  n = runif( s, min = n_min, max = n_max )
+  n = runif( s, min = n_min, max = n_max )%>%round()
   n = ifelse(n<20,20,n)
   
   # generate deltai and thetai
