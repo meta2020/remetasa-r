@@ -6,14 +6,14 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
-rtimes=2
+rtimes=1000
 
 ## SIMULATION 
 ncores = min(76, parallel::detectCores())
 cl = parallel::makeCluster(ncores, "SOCK")
 doSNOW::registerDoSNOW(cl)
 
-message("start")
+message(paste0("Start",Sys.time()))
 
 ##-- Simulation 1: HN model based -------
 set.seed(2025)
@@ -449,5 +449,5 @@ for(i in 1:nrow(set)){
 
 
 parallel::stopCluster(cl)
-message(paste0("finish"))
+message(paste0("Finish",Sys.time()))
 
