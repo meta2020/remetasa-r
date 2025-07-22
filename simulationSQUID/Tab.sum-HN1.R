@@ -5,7 +5,7 @@ source("Rfn/set.R")
 rtimes=1000
 ## create a summary table
 t.mu=set$t.theta[1]
-S=15
+S=50
 
 CP.sum=NULL
 theta.sum=NULL

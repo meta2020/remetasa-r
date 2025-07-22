@@ -18,7 +18,7 @@ nset=nrow(set)
 
 for(i in 1:nset){
   # i=2
-  load(paste0("res-BNprop//data-set-",i,"-S",S,".RData"))
+  load(paste0("res-BNprop/data-set-",i,"-S",S,".RData"))
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(11, 7, rtimes),
           dimnames = list(colnames(DATA),rownames(DATA)[1:7],c(1:rtimes)))
