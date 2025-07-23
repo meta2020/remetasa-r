@@ -4,11 +4,13 @@ library(kableExtra)
 ## --------------------------------
 
 source("Rfn/set.R")
-rtimes=1000
-## create a summary table
-t.mu=set$t.theta[1]
-S=15
 
+## create a summary table
+
+sum.tab2 = function(S){
+  
+rtimes=1000
+t.mu=set$t.theta[1]
 CP.sum=NULL
 theta.sum=NULL
 tau.sum=NULL
@@ -49,16 +51,16 @@ for(i in 1:nset){
 }
 ## 1:1 set with biased and adjusted
 PM=theta.sum[,1:2]-t.mu
-PM.sp=sprintf("%.3f", PM)%>%matrix(,nrow=nset)%>%as.data.frame()
+PM.sp=sprintf("%.1f", PM*100)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(PM.sp)=colnames(PM)
 
 BIAS=theta.sum[,(3:4)]-t.mu
-BIAS.sp=sprintf("%.3f", BIAS)%>%matrix(,nrow=nset)%>%as.data.frame()
+BIAS.sp=sprintf("%.1f", BIAS*100)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(BIAS.sp)=colnames(BIAS)
 
 SA=theta.sum[,-(1:4)]-t.mu
-SA.CP=100*CP.sum[,-(1:6)]
-SA.sp=sprintf("%.3f (%.2f)", SA, SA.CP)%>%matrix(,nrow=nset)%>%as.data.frame()
+SA.CP=100*CP.sum[,-(1:4)]
+SA.sp=sprintf("%.1f (%.1f)", SA*100, SA.CP)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(SA.sp)=colnames(SA)
 
 pt=sprintf("U[%d, %d]",set$nmin,set$nmax)
@@ -66,20 +68,30 @@ pt[-seq(1,18,6)]=""
 grp=sprintf("%d:1",set$grp)
 grp[-seq(1,18,3)]=""
 
-DF = cbind.data.frame(pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1),
+DF = cbind.data.frame(S=c(S, rep("",17)),
+                      pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1),
                       POP=PM.sp,PB=BIAS.sp,SA=SA.sp)
 
-DF.cv = cbind.data.frame(pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1), 
+DF.cv = cbind.data.frame(S=c(S, rep("",17)),
+                         pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1), 
                          100-cv.sum*100)
 
 rownames(DF.cv)=NULL
 
+DF.list = list(DF, DF.cv)
 
-DF%>%kbl(., 
-         format = "html",
+return(DF.list)
+}
+
+
+DF.all=rbind.data.frame(sum.tab2(15)[[1]], sum.tab2(50)[[1]])
+
+
+DF.all%>%kbl(., 
+         format = "latex",
          longtable = F, 
          booktabs = T, 
-         col.names = c("Patients","T:C","$\\tau^2$","N",
+         col.names = c("S","Patients","T:C","$\\tau^2$","N",
                        "NN$_P$", "BN$_P$", 
                        "NN$_O$", "BN$_O$", 
                        "C-N (CP)", "C-H (CP)", 
