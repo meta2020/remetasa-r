@@ -14,7 +14,7 @@ sum.tab3 = function(S){
   s.prop.sum=NULL
   n.prop.sum=NULL
   for(i in 1:nset){
-    load(paste0("res-HN1/data-set-",i,"-S",S,".RData"))
+    load(paste0("res-2GBN/data-set-",i,"-S",S,".RData"))
     DATA0 = DATA %>% t()%>% as.numeric() %>% 
       array(., dim = c(11, 10, rtimes),
             dimnames = list(colnames(DATA),rownames(DATA)[1:10],c(1:rtimes)))
@@ -61,10 +61,11 @@ sum.tab3 = function(S){
   grp[-seq(1,18,3)]=""
   
 RE.prop=cbind.data.frame(
-  s.prop.sum[,1]*100,s.prop.sum2[,1]*100,s.prop.sum3[,1]*100,
-  n.prop.sum[,1]*100,n.prop.sum2[,1]*100,n.prop.sum3[,1]*100)
+  s.prop.sum[,1]*100,n.prop.sum[,1]*100,
+  s.prop.sum2[,1]*100,n.prop.sum2[,1]*100,
+  s.prop.sum3[,1]*100,n.prop.sum3[,1]*100)
 
-RE.prop.all = cbind.data.frame(S=c(15, rep("",17),50, rep("",17)),
+RE.prop.all = cbind.data.frame(S=c(S, rep("",17)),
                                pt, grp, tau2=(set$t.tau)^2,
                                round(RE.prop,1))
 return(RE.prop.all) 
@@ -78,12 +79,16 @@ RE=rbind.data.frame(sum.tab3(15), sum.tab3(50))
 
 
 RE%>%kbl(., 
-             format = "html",
+             format = "latex",
              longtable = F, 
              booktabs = T, 
              col.names = c("S","Patients","T:C","$\\tau^2$",
-                           "HN$_P$", "Real-Word$_P$", "SGBN$_P$", 
-                           "HN$_O$", "Real-Word$_O$", "SGBN$_O$"),
+                           "HN$_P$", 
+                           "HN$_O$", 
+                           "Real-Word$_P$", 
+                           "Real-Word$_O$", 
+                           "SGBN$_P$", 
+                           "SGBN$_O$"),
              # digits = 1,
              align = "r",
              linesep = c('', '','\\addlinespace'),
