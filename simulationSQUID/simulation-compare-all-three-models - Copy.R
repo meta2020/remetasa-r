@@ -9,7 +9,7 @@ sapply(paste0("Rfn/", file.sources), source)
 rtimes=1000
 
 ## SIMULATION 
-ncores = min(120, parallel::detectCores())
+ncores = min(76, parallel::detectCores())
 cl = parallel::makeCluster(ncores, "SOCK")
 doSNOW::registerDoSNOW(cl)
 
@@ -79,7 +79,7 @@ for(i in 1:nrow(set)){
       eps = 1e-4,
       integ.limit = 5, 
       cub.tol = 1e-3,
-      init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1))
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
     )
     
     fit.hn = lapply(
@@ -106,7 +106,7 @@ for(i in 1:nrow(set)){
     tau.bound = 1,
     estimate.rho = TRUE, 
     eps = 1e-4,
-    init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+    init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
     )
     ## proposed method initial values
     parset.new = list(
@@ -116,7 +116,7 @@ for(i in 1:nrow(set)){
       eps = 1e-4,
       integ.limit = 5, 
       cub.tol = 1e-3,
-      init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1))
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1))
     )
     
     nmin = min(lsdata$n)
@@ -160,7 +160,7 @@ for(i in 1:nrow(set)){
     res
 
   }
-  save(DATA,file = paste0("res-HN1-nn/data-set-",i,"-S",S,".RData"))
+  save(DATA,file = paste0("res-HN1/data-set-",i,"-S",S,".RData"))
   message(paste0("Finish-HN-",S,"-",i))
 # }}
 
@@ -228,7 +228,7 @@ for(i in 1:nrow(set)){
         eps = 1e-4,
         integ.limit = 5, 
         cub.tol = 1e-3,
-        init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1))
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
       )
       
       fit.hn = lapply(
@@ -255,7 +255,7 @@ for(i in 1:nrow(set)){
         tau.bound = 1,
         estimate.rho = TRUE, 
         eps = 1e-4,
-        init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1),rho=set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),rho=set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
       )
       ## proposed method initial values
       parset.new = list(
@@ -265,7 +265,7 @@ for(i in 1:nrow(set)){
         eps = 1e-4,
         integ.limit = 5, 
         cub.tol = 1e-3,
-        init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1),rho=set.gr$t.rho+runif(1,-0.1,0.1))
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),rho=set.gr$t.rho+runif(1,-0.1,0.1))
       )
       
       nmin = min(lsdata$n)
@@ -309,7 +309,7 @@ for(i in 1:nrow(set)){
       res
       
     }
-    save(DATA,file = paste0("res-2GBN-nn/data-set-",i,"-S",S,".RData"))
+    save(DATA,file = paste0("res-2GBN/data-set-",i,"-S",S,".RData"))
     message(paste0("Finish-2GBN-",S,"-",i))
   # }}
 
@@ -376,7 +376,7 @@ for(i in 1:nrow(set)){
         eps = 1e-4,
         integ.limit = 5, 
         cub.tol = 1e-3,
-        init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1))
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
       )
       
       fit.bn = lapply(
@@ -395,7 +395,7 @@ for(i in 1:nrow(set)){
         tau.bound = 1,
         estimate.rho = TRUE, 
         eps = 1e-4,
-        init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
       )
       ## proposed method initial values
       parset.new = list(
@@ -405,7 +405,7 @@ for(i in 1:nrow(set)){
         eps = 1e-4,
         integ.limit = 5, 
         cub.tol = 1e-3,
-        init.vals = c(snn[1],set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1))
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1))
       )
       
       nmin = min(lsdata$n)
@@ -443,7 +443,7 @@ for(i in 1:nrow(set)){
       res
       
     }
-    save(DATA,file = paste0("res-BNprop-nn/data-set-",i,"-S",S,".RData"))
+    save(DATA,file = paste0("res-BNprop/data-set-",i,"-S",S,".RData"))
     message(paste0("Finish-BNprop-",S,"-",i))
   }}
 
