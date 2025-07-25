@@ -16,11 +16,11 @@ theta.sum=NULL
 tau.sum=NULL
 n.sum=NULL
 cv.sum=NULL
-nset=nrow(set)
+nset=nrow(set)/2
 
-for(i in 1:nset){
+for(i in c(1:3,7:9,13:15)){
   # i=2
-  load(paste0("res-BNprop/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-SGBN/data-set-",i,"-S",S,".RData"))
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(11, 7, rtimes),
           dimnames = list(colnames(DATA),rownames(DATA)[1:7],c(1:rtimes)))
@@ -65,15 +65,17 @@ colnames(SA.sp)=colnames(SA)
 
 pt=sprintf("U[%d, %d]",set$nmin,set$nmax)
 pt[-seq(1,18,6)]=""
-grp=sprintf("%d:1",set$grp)
-grp[-seq(1,18,3)]=""
 
-DF = cbind.data.frame(S=c(S, rep("",17)),
-                      pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1),
+DF = cbind.data.frame(S=c(S, rep("",8)),
+                      pt=pt[c(1:3,7:9,13:15)], 
+                      tau2=(set$t.tau[c(1:3,7:9,13:15)])^2, 
+                      N=round(n.sum[,1],1),
                       POP=PM.sp,PB=BIAS.sp,SA=SA.sp)
 
-DF.cv = cbind.data.frame(S=c(S, rep("",17)),
-                         pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1), 
+DF.cv = cbind.data.frame(S=c(S, rep("",8)),
+                         pt=pt[c(1:3,7:9,13:15)], 
+                         tau2=(set$t.tau[c(1:3,7:9,13:15)])^2, 
+                         N=round(n.sum[,1],1),
                          100-cv.sum*100)
 
 rownames(DF.cv)=NULL
@@ -92,7 +94,7 @@ DF.cv.all%>%kbl(.,
          format = "latex",
          longtable = F, 
          booktabs = T, 
-         col.names = c("S","Patients","T:C","$\\tau^2$","N",
+         col.names = c("S","Patients","$\\tau^2$","N",
                        "NN$_P$", "BN$_P$", 
                        "NN$_O$", "BN$_O$", 
                        "C-N (CP)", "C-H (CP)", 

@@ -12,8 +12,8 @@ sum.tab2 = function(S){
 rtimes=1000
 tau.sum=NULL
 
-nset=nrow(set)
-for(i in 1:nset){
+nset=nrow(set)/2
+for(i in c(1:3,7:9,13:15)){
   # i=2
   load(paste0("res-BNprop/data-set-",i,"-S",S,".RData"))
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
@@ -48,8 +48,10 @@ pt[-seq(1,18,6)]=""
 grp=sprintf("%d:1",set$grp)
 grp[-seq(1,18,3)]=""
 
-DF = cbind.data.frame(S=c(S, rep("",17)),
-                      pt, grp, tau2=(set$t.tau)^2, 
+DF = cbind.data.frame(S=c(S, rep("",8)),
+                      pt=pt[c(1:3,7:9,13:15)], 
+                      tau2=(set$t.tau[c(1:3,7:9,13:15)])^2, 
+                      N=round(n.sum[,1],1),
                       POP=PM.sp,PB=BIAS.sp,SA=SA.sp)
 
 DF.list = list(DF)

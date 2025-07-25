@@ -76,6 +76,7 @@ return(RE.prop.all)
 
 RE=rbind.data.frame(sum.tab3(15), sum.tab3(50))
 
+RE[c(4:6,10:12,16:18,22:24,28:30,34:36),9:10]="-"
 
 
 RE%>%kbl(., 
