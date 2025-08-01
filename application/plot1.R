@@ -27,44 +27,56 @@ pguide=guide_legend(override.aes = list(lty = 1, size = 1))
 ## Pnmax = p
 p1 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_ribbon(aes(ymin = HN.mu.lb, ymax = HN.mu.ub), alpha = 0.1, fill = "#377eb8", na.rm = TRUE) + 
-  geom_line(aes(y = HN.mu.lb, colour="The proposed HN method"), lty=2, size=1) +
-  geom_line(aes(y = HN.mu.ub, colour="The proposed HN method"), lty=2, size=1) +
-  geom_point(aes(y = HN.mu, colour="The proposed HN method"), size=3) +
-  geom_line(aes(y = HN.mu, colour="The proposed HN method"), lty=1, size=1) +
+  geom_line(aes(y = HN.mu.lb, colour="The proposed HN model based method"), lty=2, linewidth=1) +
+  geom_line(aes(y = HN.mu.ub, colour="The proposed HN model based method"), lty=2, linewidth=1) +
+  geom_point(aes(y = HN.mu, colour="The proposed HN model based method"), size=3) +
+  geom_line(aes(y = HN.mu, colour="The proposed HN model based method"), lty=1, linewidth=1) +
   px1 + py + ptheme+
   labs(title = "(A)")+  
-  scale_colour_manual(breaks = "The proposed HN method", values = "#377eb8", guide = pguide)
+  scale_colour_manual(breaks = "The proposed HN model based method", values = "#377eb8", guide = pguide)
 
 
 p2 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_ribbon(aes(ymin = BN.mu.lb, ymax = BN.mu.ub), alpha = 0.1, fill = "#e41a1c", na.rm = TRUE) + 
-  geom_line(aes(y = BN.mu.lb, colour="The proposed BN method"), lty=2, size=1) +
-  geom_line(aes(y = BN.mu.ub, colour="The proposed BN method"), lty=2, size=1) +
-  geom_point(aes(y = BN.mu, colour="The proposed BN method"), size=3) +
-  geom_line(aes(y = BN.mu, colour="The proposed BN method"), lty=1, size=1) +
+  geom_line(aes(y = BN.mu.lb, colour="The proposed BN model based method"), lty=2, size=1) +
+  geom_line(aes(y = BN.mu.ub, colour="The proposed BN model based method"), lty=2, size=1) +
+  geom_point(aes(y = BN.mu, colour="The proposed BN model based method"), size=3) +
+  geom_line(aes(y = BN.mu, colour="The proposed BN model based method"), lty=1, size=1) +
   px1 + py + ptheme+
   labs(title = "(B)")+  
-  scale_colour_manual(breaks = "The proposed BN method", values = "#e41a1c", guide = pguide)
+  scale_colour_manual(breaks = "The proposed BN model based method", values = "#e41a1c", guide = pguide)
 
 p3 = ggplot(tab1_all, aes(x = pnmin)) +
-  geom_ribbon(aes(ymin = CN.mu.lb, ymax = CN.mu.ub), alpha = 0.1, fill = "#4daf4a", na.rm = TRUE) + 
-  geom_line(aes(y = CN.mu.lb, colour="The Copas-N method"),lty=2, size=1) +
-  geom_line(aes(y = CN.mu.ub, colour="The Copas-N method"),lty=2, size=1) +
-  geom_point(aes(y = CN.mu, colour="The Copas-N method"), size=3) +
-  geom_line(aes(y = CN.mu, colour="The Copas-N method"),lty=1, size=1.5) +
+  geom_ribbon(aes(ymin = CN1.mu.lb, ymax = CN1.mu.ub), alpha = 0.1, fill = "#4daf4a", na.rm = TRUE) + 
+  geom_line(aes(y = CN1.mu.lb, colour="The Copas-N method (only0)"),lty=2, size=1) +
+  geom_line(aes(y = CN1.mu.ub, colour="The Copas-N method (only0)"),lty=2, size=1) +
+  geom_point(aes(y = CN1.mu, colour="The Copas-N method (only0)"), size=3) +
+  geom_line(aes(y = CN1.mu, colour="The Copas-N method (only0)"),lty=1, size=1) +
+  geom_ribbon(aes(ymin = CN2.mu.lb, ymax = CN2.mu.ub), alpha = 0.1, fill = "#b2df8a", na.rm = TRUE) + 
+  geom_line(aes(y = CN2.mu.lb, colour="The Copas-N method (all)"),lty=2, size=1) +
+  geom_line(aes(y = CN2.mu.ub, colour="The Copas-N method (all)"),lty=2, size=1) +
+  geom_point(aes(y = CN2.mu, colour="The Copas-N method (all)"), size=3) +
+  geom_line(aes(y = CN2.mu, colour="The Copas-N method (all)"),lty=1, size=1) +
   px1 + py + ptheme +
   labs(title = "(C)")+  
-  scale_colour_manual(breaks = c("The Copas-N method"), values = c("#4daf4a"), guide = pguide)
+  scale_colour_manual(breaks = c("The Copas-N method (only0)","The Copas-N method (all)"), 
+                      values = c("#4daf4a","#b2df8a"), guide = pguide)
 
 p4 = ggplot(tab1_all, aes(x = pnmin)) +
-  geom_ribbon(aes(ymin = CH.mu.lb, ymax = CH.mu.ub), alpha = 0.1, fill = "#984ea3", na.rm = TRUE) + 
-  geom_line(aes(y = CH.mu.lb, colour="The Copas-Shi method"),lty=2, size=1) +
-  geom_line(aes(y = CH.mu.ub, colour="The Copas-Shi method"),lty=2, size=1) +
-  geom_point(aes(y = CH.mu, colour="The Copas-Shi method"), size=3) +
-  geom_line(aes(y = CH.mu, colour="The Copas-Shi method"),lty=1, size=1) +
+  geom_ribbon(aes(ymin = CH1.mu.lb, ymax = CH1.mu.ub), alpha = 0.1, fill = "#984ea3", na.rm = TRUE) + 
+  geom_line(aes(y = CH1.mu.lb, colour="The Copas-Shi method (only0)"),lty=2, size=1) +
+  geom_line(aes(y = CH1.mu.ub, colour="The Copas-Shi method (only0)"),lty=2, size=1) +
+  geom_point(aes(y = CH1.mu, colour="The Copas-Shi method (only0)"), size=3) +
+  geom_line(aes(y = CH1.mu, colour="The Copas-Shi method (only0)"),lty=1, size=1) +
+  geom_ribbon(aes(ymin = CH2.mu.lb, ymax = CH2.mu.ub), alpha = 0.1, fill = "#beaed4", na.rm = TRUE) + 
+  geom_line(aes(y = CH2.mu.lb, colour="The Copas-Shi method (all)"),lty=2, size=1) +
+  geom_line(aes(y = CH2.mu.ub, colour="The Copas-Shi method (all)"),lty=2, size=1) +
+  geom_point(aes(y = CH2.mu, colour="The Copas-Shi method (all)"), size=3) +
+  geom_line(aes(y = CH2.mu, colour="The Copas-Shi method (all)"),lty=1, size=1) +
   px2 + py + ptheme +
   labs(title = "(D)")+  
-  scale_colour_manual(breaks = c("The Copas-Shi method"), values = c("#984ea3"), guide = pguide)
+  scale_colour_manual(breaks = c("The Copas-Shi method (only0)","The Copas-Shi method (all)"), 
+                      values = c("#984ea3","#beaed4"), guide = pguide)
 
 
 

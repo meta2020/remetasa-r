@@ -145,7 +145,28 @@ colnames(lnOR_COPAS_BNGLMM) = paste0("p = ", p_sa)
 lnOR_COPAS_BNGLMM
 
 #' Copas-Heckman-type selection model (2000)
-lnOR_COPAS2000 = vapply(
+lnOR_COPAS2000_1 = vapply(
+p_sa, 
+function(p) {
+  mod = suppressWarnings(COPAS2000(
+    yi = yi1, vi = vi1, Psemax = p, Psemin = 0.999, 
+    parset = list(
+      mu.bound = 10,
+      tau.bound = 5,
+      estimate.rho = TRUE, 
+      eps = 1e-3,
+      init.vals = NULL)))
+  mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
+  mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
+  c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
+}, 
+c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
+  "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
+  "gamma0"=0, "gamma1"=0, "converge"=0))
+colnames(lnOR_COPAS2000_1) = paste0("p = ", p_sa)
+lnOR_COPAS2000_1
+
+lnOR_COPAS2000_2 = vapply(
   p_sa, 
   function(p) {
     mod = suppressWarnings(COPAS2000(
@@ -163,16 +184,16 @@ lnOR_COPAS2000 = vapply(
   c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
     "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
     "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lnOR_COPAS2000) = paste0("p = ", p_sa)
-lnOR_COPAS2000
+colnames(lnOR_COPAS2000_2) = paste0("p = ", p_sa)
+lnOR_COPAS2000_2
 
 #' Copas-N-type selection model (2000)
-lnOR_COPAS1999 = vapply(
+lnOR_COPAS1999_1 = vapply(
   p_sa, 
   function(p) {
     mod = suppressWarnings(
       COPAS1999(
-        yi = yi, ni = ni, Pnmax = 0.999, Pnmin = p, 
+        yi = yi1, ni = ni, Pnmax = 0.999, Pnmin = p, 
         parset = list(
           mu.bound = 10,
           tau.bound = 5,
@@ -187,8 +208,31 @@ lnOR_COPAS1999 = vapply(
   c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
     "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
     "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lnOR_COPAS1999) = paste0("p = ", p_sa)
-lnOR_COPAS1999
+colnames(lnOR_COPAS1999_1) = paste0("p = ", p_sa)
+lnOR_COPAS1999_1
+
+lnOR_COPAS1999_2 = vapply(
+  p_sa, 
+  function(p) {
+    mod = suppressWarnings(
+      COPAS1999(
+        yi = yi2, ni = ni, Pnmax = 0.999, Pnmin = p, 
+        parset = list(
+          mu.bound = 10,
+          tau.bound = 5,
+          estimate.rho = TRUE, 
+          eps = 1e-3,
+          init.vals = NULL))
+    )
+    mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
+    mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
+    c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
+  }, 
+  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
+    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
+    "gamma0"=0, "gamma1"=0, "converge"=0))
+colnames(lnOR_COPAS1999_2) = paste0("p = ", p_sa)
+lnOR_COPAS1999_2
 
 #' Expected number of missing studies
 M_propos = sapply(p_sa, function(p) {
@@ -207,18 +251,32 @@ M_propos = sapply(p_sa, function(p) {
 })
 
 
-M_copas = sapply(p_sa, function(p) {
+M_copas1 = sapply(p_sa, function(p) {
   
   P_max = p
   P_min = 0.999
   ni = n1+n0
   
-  se_min_inv = 1/sqrt(min(vi)) 
-  se_max_inv = 1/sqrt(max(vi))
+  se_min_inv = 1/sqrt(min(vi1)) 
+  se_max_inv = 1/sqrt(max(vi1))
   
   gamma1 = (qnorm(P_max)-qnorm(P_min))/(se_max_inv-se_min_inv)
   gamma0 = qnorm(P_max)-gamma1*se_max_inv
-  sum((1 - pnorm(gamma0+gamma1/sqrt(vi)))/pnorm(gamma0+gamma1/sqrt(vi)))
+  sum((1 - pnorm(gamma0+gamma1/sqrt(vi1)))/pnorm(gamma0+gamma1/sqrt(vi1)))
+  
+})
+M_copas2 = sapply(p_sa, function(p) {
+  
+  P_max = p
+  P_min = 0.999
+  ni = n1+n0
+  
+  se_min_inv = 1/sqrt(min(vi2)) 
+  se_max_inv = 1/sqrt(max(vi2))
+  
+  gamma1 = (qnorm(P_max)-qnorm(P_min))/(se_max_inv-se_min_inv)
+  gamma0 = qnorm(P_max)-gamma1*se_max_inv
+  sum((1 - pnorm(gamma0+gamma1/sqrt(vi2)))/pnorm(gamma0+gamma1/sqrt(vi2)))
   
 })
 
@@ -227,28 +285,25 @@ M_copas = sapply(p_sa, function(p) {
 tab1 = data.frame(
   HN = t(lnOR_COPAS_HNGLMM[c(1,3,4),]),
   BN = t(lnOR_COPAS_BNGLMM[c(1,3,4),]),
-  CH = t(lnOR_COPAS2000[c(1,3,4),]),  # copas-heckman
-  CN = t(lnOR_COPAS1999[c(1,3,4),]),  # copas-n
-  M.c = round(M_copas), 
+  CH1 = t(lnOR_COPAS2000_1[c(1,3,4),]),  # copas-heckman
+  CH2 = t(lnOR_COPAS2000_2[c(1,3,4),]),  # copas-heckman
+  CN1 = t(lnOR_COPAS1999_1[c(1,3,4),]),  # copas-n
+  CN2 = t(lnOR_COPAS1999_2[c(1,3,4),]),  # copas-n
+  M.c1 = round(M_copas1),
+  M.c2 = round(M_copas2),
   M.p = round(M_propos)
 )
 
-# tab1_p1 = c(
-#   HN = lnOR_hn$mu[1], HN.mu.lb = unname(lnOR_hn_lb), HN.mu.ub = unname(lnOR_hn_ub),
-#   BN = lnOR_bn$mu[1], BN.mu.lb = unname(lnOR_bn_lb), BN.mu.ub = unname(lnOR_bn_ub),
-#   CH = lnOR_nn$mu[1], NN.mu.lb = unname(lnOR_nn_lb), NN.mu.ub = unname(lnOR_nn_ub),
-#   CN = lnOR_nn$mu[1], NN.mu.lb = unname(lnOR_nn_lb), NN.mu.ub = unname(lnOR_nn_ub),
-#   M.c = 0, M.p = 0
-# )
-
-# tab1_all = rbind("p = 1" = tab1_p1, tab1)
 tab1_all = tab1
 tab1_all$pnmin = c(p_sa)
 tab1_all$pnmax = c(rep(0.999, 10))
 
 #' SAVE RESULTS1
 #' 
-save(lnOR_COPAS_HNGLMM, lnOR_COPAS_BNGLMM, lnOR_COPAS2000, lnOR_COPAS1999,
-     M_propos, M_copas, tab1_all,
+save(lnOR_COPAS_HNGLMM, lnOR_COPAS_BNGLMM, 
+     lnOR_COPAS2000_1, lnOR_COPAS2000_2, 
+     lnOR_COPAS1999_1, lnOR_COPAS1999_2,
+     M_propos, M_copas1, M_copas2, 
+     tab1_all,
      lnOR_hn, lnOR_bn, lnOR_nn,
      file = "example-bias1.RData")
