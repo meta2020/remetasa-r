@@ -26,9 +26,6 @@ for(i in 1:nset){
   for(j in 1:rtimes){
     DATA0[1:7,,j][,(DATA0[,,j][8,]!=0)]=NA
   }
-  # x=do.call(rbind, lapply(1:rtimes, function(i) DATA0[1,,i]))
-  # boxplot(x)
-  # abline(h=-2)
   
   mu    = do.call(rbind, lapply(1:rtimes, function(i) DATA0[1,,i]))
   mu.se = do.call(rbind, lapply(1:rtimes, function(i) DATA0[2,,i]))
@@ -75,7 +72,24 @@ DF.cv = cbind.data.frame(S=c(S, rep("",17)),
                          100-cv.sum*100)
 rownames(DF.cv)=NULL
 
-DF.list = list(DF, DF.cv)
+tPM=tau.sum[,1:3]
+tPM.sp=sprintf("%.2f", tPM)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(tPM.sp)=colnames(tPM)
+
+tBIAS=tau.sum[,(4:6)]
+tBIAS.sp=sprintf("%.2f", tBIAS)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(tBIAS.sp)=colnames(tBIAS)
+
+tSA=tau.sum[,-(1:6)]
+tSA.sp=sprintf("%.2f", tSA)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(tSA.sp)=colnames(tSA)
+
+
+tDF = cbind.data.frame(S=c(S, rep("",17)),
+                      pt, grp, tau2=(set$t.tau)^2,
+                      POP=tPM.sp,PB=tBIAS.sp,SA=tSA.sp)
+
+DF.list = list(DF, DF.cv, tDF)
 
 return(DF.list)
 }
@@ -85,35 +99,30 @@ return(DF.list)
 
 DF.all=rbind.data.frame(sum.tab(15)[[1]], sum.tab(50)[[1]])
 DF.cv.all=rbind.data.frame(sum.tab(15)[[2]], sum.tab(50)[[2]])
+tDF.all=rbind.data.frame(sum.tab(15)[[3]], sum.tab(50)[[3]])
 
 
 
-DF.cv.all%>%kbl(., 
-         format = "latex",
+DF.all%>%kbl(., 
+         format = "html",
          longtable = F, 
          booktabs = T, 
-         col.names = c("S","Patients","T:C","$\\tau^2$","N",
-                       "NN$_P$", "HN$_P$", "BN$_P$", 
-                       "NN$_O$", "HN$_O$", "BN$_O$", 
-                       "C-N (CP)", "C-S (CP)", 
-                       "HN$_{Prop}$ (CP)","BN$_{Prop}$ (CP)"),
-         # digits = 1,
+         col.names = c("$S$","Patients","T:C","$\\tau^2$","$N$",
+                       "NN$_P$", "HN$_P$", "CBN$_P$", 
+                       "NN$_O$", "HN$_O$", "CBN$_O$", 
+                       "CN (CP)", "CS (CP)", 
+                       "HN$^\\text{Prop}$ (CP)","CBN$^\\text{Prop}$ (CP)"),
          align = "r",
          linesep = c('', '','\\addlinespace'),
          escape = FALSE,
          label = "set1",
          position ="!htbp",
-         caption = "Simulation: HN") %>% 
-  # add_header_above(c("Patients","$\\tau^2$",
-  #                    "NN$_O$", "HN$_O$", "BN$_O$", 
-  #                    "CopasN (CP)", "CopasH (CP)", 
-  #                    "HN$_{SA}$ (CP)","BN$_{SA}$ (CP)"), escape = FALSE) %>% 
-  # kable_styling(font_size = 9) %>%
+         caption = "Simulation1") %>% 
   footnote(general = "
-           NN$_P$, HN$_P$, and BN$_P$ are the estimates based on the population studies;
-           NN$_O$, HN$_O$, and BN$_O$ are the estimates based on the published studies;
-           C-N and C-S are the Copas-N and Copas-Shi methods;
-           HN$_{prop}$ and BN$_{prop}$ are the proposed sensitivity analysis methods;
+           Results of NN$_P$, HN$_P$, and CBN$_P$ are based on the population studies;
+           results of NN$_O$, HN$_O$, and CBN$_O$ are based on the published studies;
+           CN and CS indicate the Copas-N and Copas-Shi methods;
+           HN$^\\text{Prop}$ and CBN$^\\text{Prop}$ indicate the proposed HN or CBN model based sensitivity analysis methods;
            CP indicates the coverage probability.", 
            escape = FALSE, threeparttable = TRUE,  general_title = "")
 
