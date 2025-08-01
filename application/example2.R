@@ -97,7 +97,28 @@ colnames(lgtP_COPAS_BNGLMM) = paste0("p = ", p_sa)
 lgtP_COPAS_BNGLMM
 
 #' Copas-Heckman-type selection model (2000)
-lgtP_COPAS2000 = vapply(
+lgtP_COPAS2000_1 = vapply(
+  p_sa, 
+  function(p) {
+    mod = COPAS2000(
+      yi = yi1, vi = vi1, Psemax = p, Psemin = 0.999, 
+      parset = list(
+        mu.bound = 10,
+        tau.bound = 5,
+        estimate.rho = TRUE, 
+        eps = 1e-3,
+        init.vals = NULL))
+    mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
+    mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
+    c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
+  }, 
+  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
+    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
+    "gamma0"=0, "gamma1"=0, "converge"=0))
+colnames(lgtP_COPAS2000_1) = paste0("p = ", p_sa)
+lgtP_COPAS2000_1
+
+lgtP_COPAS2000_2 = vapply(
   p_sa, 
   function(p) {
     mod = COPAS2000(
@@ -115,15 +136,15 @@ lgtP_COPAS2000 = vapply(
   c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
     "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
     "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lgtP_COPAS2000) = paste0("p = ", p_sa)
-lgtP_COPAS2000
+colnames(lgtP_COPAS2000_2) = paste0("p = ", p_sa)
+lgtP_COPAS2000_2
 
 #' Copas-N-type selection model (2000)
-lgtP_COPAS1999 = vapply(
+lgtP_COPAS1999_1 = vapply(
   p_sa, 
   function(p) {
     mod = COPAS1999(
-      yi = y1, ni = n1, Pnmax = 0.999, Pnmin = p, 
+      yi = yi1, ni = n1, Pnmax = 0.999, Pnmin = p, 
       parset = list(
           mu.bound = 10,
           tau.bound = 5,
@@ -137,8 +158,29 @@ lgtP_COPAS1999 = vapply(
   c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
     "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
     "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lgtP_COPAS1999) = paste0("p = ", p_sa)
-lgtP_COPAS1999
+colnames(lgtP_COPAS1999_1) = paste0("p = ", p_sa)
+lgtP_COPAS1999_1
+
+lgtP_COPAS1999_2 = vapply(
+  p_sa, 
+  function(p) {
+    mod = COPAS1999(
+      yi = yi2, ni = n1, Pnmax = 0.999, Pnmin = p, 
+      parset = list(
+        mu.bound = 10,
+        tau.bound = 5,
+        estimate.rho = TRUE, 
+        eps = 1e-3,
+        init.vals = NULL))
+    mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
+    mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
+    c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
+  }, 
+  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
+    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
+    "gamma0"=0, "gamma1"=0, "converge"=0))
+colnames(lgtP_COPAS1999_2) = paste0("p = ", p_sa)
+lgtP_COPAS1999_2
 
 #' NUMBER OF THE UNPUBLISHED
 M_propos = sapply(p_sa, function(p) {
@@ -156,7 +198,7 @@ M_propos = sapply(p_sa, function(p) {
 })
 
 
-M_copas = sapply(p_sa, function(p) {
+M_copas1 = sapply(p_sa, function(p) {
   
   P_max = p
   P_min = 0.999
@@ -170,13 +212,29 @@ M_copas = sapply(p_sa, function(p) {
   
 })
 
+M_copas2 = sapply(p_sa, function(p) {
+  
+  P_max = p
+  P_min = 0.999
+  
+  se_min_inv = 1/sqrt(min(vi2)) 
+  se_max_inv = 1/sqrt(max(vi2))
+  
+  gamma1 = (qnorm(P_max)-qnorm(P_min))/(se_max_inv-se_min_inv)
+  gamma0 = qnorm(P_max)-gamma1*se_max_inv
+  sum((1 - pnorm(gamma0+gamma1/sqrt(vi2)))/pnorm(gamma0+gamma1/sqrt(vi2)))
+  
+})
 
 #' Table 1
 tab1 = data.frame(
   BN = t(lgtP_COPAS_BNGLMM[c(1,3,4),]),
-  CH = t(lgtP_COPAS2000[c(1,3,4),]), # copas-heckman
-  CN = t(lgtP_COPAS1999[c(1,3,4),]), # copas-n
-  M.c = round(M_copas), 
+  CH1 = t(lgtP_COPAS2000_1[c(1,3,4),]), # copas-heckman
+  CH2 = t(lgtP_COPAS2000_2[c(1,3,4),]), # copas-heckman
+  CN1 = t(lgtP_COPAS1999_1[c(1,3,4),]), # copas-n
+  CN2 = t(lgtP_COPAS1999_2[c(1,3,4),]), 
+  M.c1 = round(M_copas1), 
+  M.c2 = round(M_copas2), 
   M.p = round(M_propos)
 )
 
@@ -194,8 +252,10 @@ tab1_all$pnmax = rep(0.999, 10)
 
 #' SAVE RESULTS1
 #' 
-save(lgtP_COPAS_BNGLMM, lgtP_COPAS2000,lgtP_COPAS1999,
-     M_propos, M_copas, tab1_all,
+save(lgtP_COPAS_BNGLMM, 
+     lgtP_COPAS2000_1,lgtP_COPAS2000_2,
+     lgtP_COPAS1999_1,lgtP_COPAS1999_2,
+     M_propos, M_copas1, M_copas2, tab1_all,
      lgtP_bn, lgtP_nn,
      file = "example-bias2.RData")
 

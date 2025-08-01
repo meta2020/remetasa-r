@@ -52,15 +52,15 @@ p2 = ggplot(tab1_all, aes(x = pnmin)) +
 
 p3 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_ribbon(aes(ymin = CH1.mu.lb, ymax = CH1.mu.ub), alpha = 0.1, fill = "#984ea3", na.rm = TRUE) + 
-  geom_line(aes(y = CH1.mu.lb, colour="The Copas-Shi method (only0)"), lty=2, size=1) +
-  geom_line(aes(y = CH1.mu.ub, colour="The Copas-Shi method (only0)"), lty=2, size=1) +
-  geom_point(aes(y = CH1.mu, colour="The Copas-Shi method (only0)"), size=3) +
-  geom_line(aes(y = CH1.mu, colour="The Copas-Shi method (only0)"), lty=1, size=1) +
+  geom_line(aes(y = CH1.mu.lb, colour="The Copas-Shi method"), lty=2, size=1) +
+  geom_line(aes(y = CH1.mu.ub, colour="The Copas-Shi method"), lty=2, size=1) +
+  geom_point(aes(y = CH1.mu, colour="The Copas-Shi method"), size=3) +
+  geom_line(aes(y = CH1.mu, colour="The Copas-Shi method"), lty=1, size=1) +
   geom_ribbon(aes(ymin = CH2.mu.lb, ymax = CH2.mu.ub), alpha = 0.1, fill = "#beaed4", na.rm = TRUE) + 
-  geom_line(aes(y = CH2.mu.lb, colour="The Copas-Shi method (all)"), lty=2, size=1) +
-  geom_line(aes(y = CH2.mu.ub, colour="The Copas-Shi method (all)"), lty=2, size=1) +
-  geom_point(aes(y = CH2.mu, colour="The Copas-Shi method (all)"), size=3) +
-  geom_line(aes(y = CH2.mu, colour="The Copas-Shi method (all)"), lty=1, size=1) +
+  geom_line(aes(y = CH2.mu.lb, colour="The Copas-Shi method"), lty=2, size=1) +
+  geom_line(aes(y = CH2.mu.ub, colour="The Copas-Shi method"), lty=2, size=1) +
+  geom_point(aes(y = CH2.mu, colour="The Copas-Shi method"), size=3) +
+  geom_line(aes(y = CH2.mu, colour="The Copas-Shi method"), lty=1, size=1) +
   px2 + py + ptheme+
   labs(title = "(C)")+  
   scale_colour_manual(breaks = c("The Copas-Shi method (only0)","The Copas-Shi method (all)"), 
