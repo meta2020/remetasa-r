@@ -31,8 +31,6 @@ abline(v=res2$beta)
 #' Data
 y1 = data$y1
 n1 = data$n1
-yi = data$yi
-vi = data$vi
 
 #' NN model
 lgtP_nn = NN_LMM(
