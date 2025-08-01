@@ -13,10 +13,19 @@ sapply(paste0("Rfn/", file.sources), source)
 data = read.csv("niel-weise21.csv")
 
 #' Derive continuous outcomes (logit-proportion and se)
-metadt = meta::metaprop(event=y1, n=n1, data=data, 
-                  sm="PLOGIT", method.incr = "only0", allstudies = T)
-data$yi = metadt$TE
-data$vi = (metadt$seTE)^2
+yvi1 = metafor::escalc(measure="PLO", xi=y1, ni=n1, data=data, to = "only0")
+yi1 = yvi1$yi
+vi1 = yvi1$vi
+res1 = rma(yi1, vi1, data=yvi1)
+funnel(trimfill(res1,estimator="L0"), xlim = c(-7,0))
+abline(v=res1$beta)
+
+yvi2 = metafor::escalc(measure="PLO", xi=y1, ni=n1, data=data, to = "all")
+yi2 = yvi2$yi
+vi2 = yvi2$vi
+res2 = rma(yi2, vi2, data=yvi2)
+funnel(trimfill(res2,estimator="L0"), xlim = c(-7,0))
+abline(v=res2$beta)
 
 #' Meta-analysis without PB ----------
 #' Data
@@ -27,7 +36,7 @@ vi = data$vi
 
 #' NN model
 lgtP_nn = NN_LMM(
-  yi=yi, vi=vi, 
+  yi=yi2, vi=vi2, 
   parset=list(
     mu.bound = 10, 
     tau.bound = 5,
@@ -94,7 +103,7 @@ lgtP_COPAS2000 = vapply(
   p_sa, 
   function(p) {
     mod = COPAS2000(
-      yi = yi, vi = vi, Psemax = p, Psemin = 0.999, 
+      yi = yi2, vi = vi2, Psemax = p, Psemin = 0.999, 
       parset = list(
         mu.bound = 10,
         tau.bound = 5,
@@ -116,7 +125,7 @@ lgtP_COPAS1999 = vapply(
   p_sa, 
   function(p) {
     mod = COPAS1999(
-      yi = yi, ni = n1, Pnmax = 0.999, Pnmin = p, 
+      yi = y1, ni = n1, Pnmax = 0.999, Pnmin = p, 
       parset = list(
           mu.bound = 10,
           tau.bound = 5,
@@ -154,12 +163,12 @@ M_copas = sapply(p_sa, function(p) {
   P_max = p
   P_min = 0.999
 
-  se_min_inv = 1/sqrt(min(vi)) 
-  se_max_inv = 1/sqrt(max(vi))
+  se_min_inv = 1/sqrt(min(vi1)) 
+  se_max_inv = 1/sqrt(max(vi1))
   
   gamma1 = (qnorm(P_max)-qnorm(P_min))/(se_max_inv-se_min_inv)
   gamma0 = qnorm(P_max)-gamma1*se_max_inv
-  sum((1 - pnorm(gamma0+gamma1/sqrt(vi)))/pnorm(gamma0+gamma1/sqrt(vi)))
+  sum((1 - pnorm(gamma0+gamma1/sqrt(vi1)))/pnorm(gamma0+gamma1/sqrt(vi1)))
   
 })
 

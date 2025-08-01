@@ -1,16 +1,15 @@
 ## Generate meta-analysis according to the BN-GLMM
 ## N are sampled from uniform distributions
 
-gen.data2.su = function(
+gen.data2.1bn = function(
     s, 
     n_min, n_max,
     gr,
     theta,tau,rho,
-    y_min,y_max,
     Pnmax, Pnmin){
   
-  n = runif( s, min = n_min, max = n_max )%>%round()
-  n = ifelse(n<20,20,n)
+  ni = runif( s, min = n_min, max = n_max )%>%round()
+  ni = ifelse(ni<10,10,ni)
   
   # generate deltai and thetai
   sigma=matrix(c(tau^2,rho*tau,rho*tau,1),2,2)
@@ -19,10 +18,9 @@ gen.data2.su = function(
   deltai=m[,2]
   
   # generate yi
-  yi = sapply(1:s, function(i) rbinom(1, n[i], plogis(thetai[i])) )
+  yi = sapply(1:s, function(i) rbinom(1, ni[i], plogis(thetai[i])) )
   
-  p.dt = data.frame(y=yi,n=n)
-  ni=n
+  p.dt = data.frame(yi=yi,ni=ni)
   ## selective process
   n_min=min(ni) 
   n_max=max(ni)

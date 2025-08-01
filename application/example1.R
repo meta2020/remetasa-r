@@ -21,14 +21,23 @@ n0 = data$n0
 ni = n1+n0
 
 #' Derive continuous outcomes (lnOR and se)
-yvi = metafor::escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0)
-yi = yvi[,1]
-vi = yvi[,2]
+yvi1 = metafor::escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, to="only0")
+yi1 = yvi1[,1]
+vi1 = yvi1[,2]
+res1 = rma(yi1, vi1, data=yvi1)
+funnel(trimfill(res1,estimator="L0"), xlim = c(-6,4))
+abline(v=res1$beta)
 
+yvi2 = metafor::escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0,to="all")
+yi2 = yvi2[,1]
+vi2 = yvi2[,2]
+res2 = rma(yi2, vi2, data=yvi2)
+funnel(trimfill(res2,estimator="L0"), xlim = c(-6,4))
+abline(v=res2$beta)
 
 #' NN model
 lnOR_nn = NN_LMM(
-  yi=yi, vi=vi, 
+  yi=yi2, vi=vi2, 
   parset=list(
     mu.bound = 10, 
     tau.bound = 5,
@@ -140,7 +149,7 @@ lnOR_COPAS2000 = vapply(
   p_sa, 
   function(p) {
     mod = suppressWarnings(COPAS2000(
-      yi = yi, vi = vi, Psemax = p, Psemin = 0.999, 
+      yi = yi2, vi = vi2, Psemax = p, Psemin = 0.999, 
       parset = list(
         mu.bound = 10,
         tau.bound = 5,
