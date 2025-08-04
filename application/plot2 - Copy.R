@@ -24,7 +24,7 @@ px2=scale_x_reverse(n.breaks = 10, name="P(publishing studies with largest SE)")
 pguide=guide_legend(override.aes = list(lty = 1, size = 1))
 
 ## Pnmax = p
-p1 = ggplot(tab1_all, aes(x = pnmin)) +
+p1 = ggplot(tab1_all, aes(x = M.p)) +
   geom_ribbon(aes(ymin = BN.mu.lb, ymax = BN.mu.ub), alpha = 0.1, fill = "#d7191c", na.rm = TRUE) + 
   geom_line(aes(y = BN.mu.lb, colour="The proposed BN method"), lty=2, size=1) +
   geom_line(aes(y = BN.mu.ub, colour="The proposed BN method"), lty=2, size=1) +
@@ -34,7 +34,7 @@ p1 = ggplot(tab1_all, aes(x = pnmin)) +
   labs(title = "(A)")+  
   scale_colour_manual(breaks = "The proposed BN method", values = "#e41a1c", guide = pguide)
 
-p2 = ggplot(tab1_all, aes(x = pnmin)) +
+p2 = ggplot(tab1_all, aes(x = M.p)) +
   geom_ribbon(aes(ymin = CN1.mu.lb, ymax = CN1.mu.ub), alpha = 0.1, fill = "#4daf4a", na.rm = TRUE) + 
   geom_line(aes(y = CN1.mu.lb, colour="The Copas-N method (only0)"), lty=2, size=1) +
   geom_line(aes(y = CN1.mu.ub, colour="The Copas-N method (only0)"), lty=2, size=1) +
@@ -50,7 +50,7 @@ p2 = ggplot(tab1_all, aes(x = pnmin)) +
   scale_colour_manual(breaks = c("The Copas-N method (only0)","The Copas-N method (all)"), 
                       values = c("#4daf4a","#b2df8a"), guide = pguide)
 
-p3 = ggplot(tab1_all, aes(x = pnmin)) +
+p3 = ggplot(tab1_all, aes(x = M.c1)) +
   geom_ribbon(aes(ymin = CH1.mu.lb, ymax = CH1.mu.ub), alpha = 0.1, fill = "#984ea3", na.rm = TRUE) + 
   geom_line(aes(y = CH1.mu.lb, colour="The Copas-Shi method"), lty=2, size=1) +
   geom_line(aes(y = CH1.mu.ub, colour="The Copas-Shi method"), lty=2, size=1) +

@@ -8,6 +8,9 @@ library(kableExtra)
 
 ## LOAD R DATA
 load("example-bias2.RData")
+load("example2-t-all.RData")
+load("example2-t-only0.RData")
+res.t=cbind.data.frame(only0=res.all.t0, all=res.t.all)
 
 ptheme= theme(panel.background = element_rect(fill = "white", colour = "grey50"),
               panel.grid.major = element_line(colour = "grey87"),
@@ -19,8 +22,10 @@ ptheme= theme(panel.background = element_rect(fill = "white", colour = "grey50")
               legend.text = element_text(size = 14), 
               legend.background = element_rect(fill = "white", color = "black"))
 py= scale_y_continuous(limits = c(-7,-2), name = "lnOR", n.breaks = 10)
+py2= scale_y_continuous(limits = c(-5,5), name = "lnOR", n.breaks = 10)
 px1=scale_x_reverse(n.breaks = 10, name="P(publishing studies with smallest sample size)")
 px2=scale_x_reverse(n.breaks = 10, name="P(publishing studies with largest SE)")
+px3=scale_x_reverse(n.breaks = 10, name="P(publishing studies from population)")
 pguide=guide_legend(override.aes = list(lty = 1, size = 1))
 
 ## Pnmax = p
@@ -65,6 +70,22 @@ p3 = ggplot(tab1_all, aes(x = pnmin)) +
   labs(title = "(C)")+  
   scale_colour_manual(breaks = c("The Copas-Shi method (only0)","The Copas-Shi method (all)"), 
                       values = c("#984ea3","#beaed4"), guide = pguide)
+
+p4 = ggplot(res.t, aes(x = only0.p)) +
+  geom_ribbon(aes(ymin = only0.bn.lower.1, ymax = only0.bn.upper.1), alpha = 0.1, fill = "#ff7f00", na.rm = TRUE) + 
+  geom_line(aes(y = only0.bn.lower.1, colour="The t-statistic based method (only0)"), lty=2, size=1) +
+  geom_line(aes(y = only0.bn.upper.1, colour="The t-statistic based method (only0)"), lty=2, size=1) +
+  geom_point(aes(y = only0.bn.mean.1, colour="The t-statistic based method (only0)"), size=3) +
+  geom_line(aes(y = only0.bn.mean.1, colour="The t-statistic based method (only0)"), lty=1, size=1) +
+  geom_ribbon(aes(ymin = all.bn.lower.1, ymax = all.bn.upper.1), alpha = 0.1, fill = "#fdc086", na.rm = TRUE) + 
+  geom_line(aes(y = all.bn.lower.1, colour="The t-statistic based method (all)"), lty=2, size=1) +
+  geom_line(aes(y = all.bn.upper.1, colour="The t-statistic based method (all)"), lty=2, size=1) +
+  geom_point(aes(y = all.bn.mean.1, colour="The t-statistic based method (all)"), size=3) +
+  geom_line(aes(y = all.bn.mean.1, colour="The t-statistic based method (all)"), lty=1, size=1) +
+  px3 + py2 + ptheme+
+  labs(title = "(C)")+  
+  scale_colour_manual(breaks = c("The t-statistic based method (only0)","The t-statistic based method (all)"), 
+                      values = c("#ff7f00","#fdc086"), guide = pguide)
 
 p=grid.arrange(p1, p2, p3, ncol = 2, nrow = 2)
 ggsave(filename = "plot2.eps", plot = p, device = cairo_ps, width = 12, height = 12) 
