@@ -6,23 +6,78 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 library(metafor)
+#' Data are from 1. Stijnen T, Hamza TH, Özdemir P. 
+#' Random effects meta-analysis of event outcome in the framework of the 
+#' generalized linear mixed model with applications in sparse data. 
+#' Stat Med. 2010;29(29):3046-3067. 
 # data = read.csv("niel-weise21.csv")
-data = read.csv("thomas.csv")
-data = dat.egger2001[,c(1,4,5,6,7)]
-colnames(data)=c("study","y1","n1","y0","n0")
-
+data = read.csv("thomas00.csv")
 #' Meta-analysis without PB ----------
 #' Data
-data$ni=data$n0+data$n1
+y1 = data$y1
+y0 = data$y0
+n1 = data$n1
+n0 = data$n0
+ni = n1+n0
 
 #' Derive continuous outcomes (lnOR and se)
-yvi1 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, data=data, to="only0")
-yi1 = yvi1$yi
-vi1 = yvi1$vi
+yvi1 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, to="only0")
+yi1 = yvi1[,1]
+vi1 = yvi1[,2]
 
-yvi2 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, data=data, to="all")
-yi2 = yvi2$yi
-vi2 = yvi2$vi
+yvi2 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0,to="all")
+yi2 = yvi2[,1]
+vi2 = yvi2[,2]
+
+#' NN model
+lnOR_nn = NN_LMM(
+  yi=yi2, vi=vi2, 
+  parset=list(
+    mu.bound = 10, 
+    tau.bound = 5,
+    eps = 1e-3,
+    init.vals = NULL
+  ))
+lnOR_nn_lb = lnOR_nn$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*lnOR_nn$mu[2]
+lnOR_nn_ub = lnOR_nn$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*lnOR_nn$mu[2]
+sprintf("theta (95CI, SE): %.3f (%.3f, %.3f; %.3f)", 
+        lnOR_nn$mu[1], lnOR_nn_lb, lnOR_nn_ub, lnOR_nn$mu[2])
+sprintf("tau (SE): %.3f (%.3f)", 
+        lnOR_nn$tau[1], lnOR_nn$tau[2])
+
+#' HN-GLMM (takes longer time)
+lnOR_hn = HN_GLMM(
+  y0 = y0, y1 = y1, n0 = n0, n1 = n1, 
+  parset = list(
+    mu.bound = 10,
+    tau.bound = 5,
+    eps = 1e-3,
+    integ.limit = 10, 
+    cub.tol = 1e-5,
+    init.vals = NULL))
+lnOR_hn_lb = lnOR_hn$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*lnOR_hn$mu[2]
+lnOR_hn_ub = lnOR_hn$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*lnOR_hn$mu[2]
+sprintf("theta (95CI, SE): %.3f (%.3f, %.3f; %.3f)", 
+        lnOR_hn$mu[1], lnOR_hn_lb, lnOR_hn_ub, lnOR_hn$mu[2])
+sprintf("tau (SE): %.3f (%.3f)", 
+        lnOR_hn$tau[1], lnOR_hn$tau[2])
+
+#' BN-GLMM
+lnOR_bn = BN_GLMM(
+  y0 = y0, y1 = y1, n0 = n0, n1 = n1, 
+  parset = list(
+    mu.bound = 10,
+    tau.bound = 5,
+    eps = 1e-3,
+    integ.limit = 10, 
+    cub.tol = 1e-5,
+    init.vals = NULL))
+lnOR_bn_lb = lnOR_bn$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*lnOR_bn$mu[2]
+lnOR_bn_ub = lnOR_bn$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*lnOR_bn$mu[2]
+sprintf("theta (95CI, SE): %.3f (%.3f, %.3f; %.3f)", 
+        lnOR_bn$mu[1], lnOR_bn_lb, lnOR_bn_ub, lnOR_bn$mu[2])
+sprintf("tau (SE): %.3f (%.3f)", 
+        lnOR_bn$tau[1], lnOR_bn$tau[2])
 
 
 
@@ -31,14 +86,14 @@ vi2 = yvi2$vi
 #' (Psemax = p_sa, Psemin = 0.999)
 #' 
 #' Proposal for HN-GLMM
-nmin=min(data$ni)
-nmax=max(data$ni)
+nmin=min(ni)
+nmax=max(ni)
 p_sa = c(0.99, seq(0.9, 0.1, -0.1))
 lnOR_COPAS_HNGLMM = vapply(
   p_sa, 
   function(p) {
     mod = COPAS_HNGLMM(
-      y0=data$y0, y1=data$y1, n0=data$n0, n1=data$n1, Pnmax = 0.999, Pnmin = p, n_min = nmin, n_max = nmax,
+      y0=y0, y1=y1, n0=n0, n1=n1, Pnmax = 0.999, Pnmin = p, n_min = nmin, n_max = nmax,
       parset = list(
         mu.bound = 10,
         tau.bound = 5,
@@ -63,7 +118,7 @@ lnOR_COPAS_BNGLMM = vapply(
   p_sa, 
   function(p) {
     mod = COPAS_BNGLMM(
-      y0=data$y0, y1=data$y1, n0=data$n0, n1=data$n1, Pnmax = 0.999, Pnmin = p, n_min = nmin, n_max = nmax,
+      y0=y0, y1=y1, n0=n0, n1=n1, Pnmax = 0.999, Pnmin = p, n_min = nmin, n_max = nmax,
       parset = list(
         mu.bound = 10,
         tau.bound = 5,
@@ -132,7 +187,7 @@ lnOR_COPAS1999_1 = vapply(
   function(p) {
     mod = suppressWarnings(
       COPAS1999(
-        yi = yi1, ni = data$ni, Pnmax = 0.999, Pnmin = p, 
+        yi = yi1, ni = ni, Pnmax = 0.999, Pnmin = p, 
         parset = list(
           mu.bound = 10,
           tau.bound = 5,
@@ -155,7 +210,7 @@ lnOR_COPAS1999_2 = vapply(
   function(p) {
     mod = suppressWarnings(
       COPAS1999(
-        yi = yi2, ni = data$ni, Pnmax = 0.999, Pnmin = p, 
+        yi = yi2, ni = ni, Pnmax = 0.999, Pnmin = p, 
         parset = list(
           mu.bound = 10,
           tau.bound = 5,
@@ -174,23 +229,27 @@ colnames(lnOR_COPAS1999_2) = paste0("p = ", p_sa)
 lnOR_COPAS1999_2
 
 #' Expected number of missing studies
-M_n = sapply(p_sa, function(p) {
+M_propos = sapply(p_sa, function(p) {
   
   P_max = 0.999
   P_min = p
-
+  ni = n1+n0
   
-  a1 = (qnorm(P_max)-qnorm(P_min))/(sqrt(nmax)-sqrt(nmin))
-  a0 = qnorm(P_max)-a1*sqrt(nmax)
-  sum((1 - pnorm(a0+a1*sqrt(data$ni)))/pnorm(a0+a1*sqrt(data$ni))) 
+  n_min = min(ni) 
+  n_max = max(ni)
+  
+  a1 = (qnorm(P_max)-qnorm(P_min))/(sqrt(n_max)-sqrt(n_min))
+  a0 = qnorm(P_max)-a1*sqrt(n_max)
+  sum((1 - pnorm(a0+a1*sqrt(ni)))/pnorm(a0+a1*sqrt(ni))) 
   
 })
 
 
-M_s.only0 = sapply(p_sa, function(p) {
+M_copas1 = sapply(p_sa, function(p) {
   
   P_max = p
   P_min = 0.999
+  ni = n1+n0
   
   se_min_inv = 1/sqrt(min(vi1)) 
   se_max_inv = 1/sqrt(max(vi1))
@@ -200,10 +259,11 @@ M_s.only0 = sapply(p_sa, function(p) {
   sum((1 - pnorm(gamma0+gamma1/sqrt(vi1)))/pnorm(gamma0+gamma1/sqrt(vi1)))
   
 })
-M_s.all = sapply(p_sa, function(p) {
+M_copas2 = sapply(p_sa, function(p) {
   
   P_max = p
   P_min = 0.999
+  ni = n1+n0
   
   se_min_inv = 1/sqrt(min(vi2)) 
   se_max_inv = 1/sqrt(max(vi2))
@@ -223,9 +283,9 @@ tab1 = data.frame(
   CH2 = t(lnOR_COPAS2000_2[c(1,3,4),]),  # copas-heckman
   CN1 = t(lnOR_COPAS1999_1[c(1,3,4),]),  # copas-n
   CN2 = t(lnOR_COPAS1999_2[c(1,3,4),]),  # copas-n
-  M.c1 = round(M_s.only0),
-  M.c2 = round(M_s.all),
-  M.p = round(M_n)
+  M.c1 = round(M_copas1),
+  M.c2 = round(M_copas2),
+  M.p = round(M_propos)
 )
 
 tab1_all = tab1
@@ -237,5 +297,7 @@ tab1_all$pnmax = c(rep(0.999, 10))
 save(lnOR_COPAS_HNGLMM, lnOR_COPAS_BNGLMM, 
      lnOR_COPAS2000_1, lnOR_COPAS2000_2, 
      lnOR_COPAS1999_1, lnOR_COPAS1999_2,
+     M_propos, M_copas1, M_copas2, 
      tab1_all,
-     file = "example2-1.RData")
+     lnOR_hn, lnOR_bn, lnOR_nn,
+     file = "example-bias3.RData")

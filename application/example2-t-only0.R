@@ -13,7 +13,7 @@ data.x <- data.frame(
     tp = c(0, 1, 2, 0, 5, 1, 1, 1, 1, 1, 0, 0, 3, 6, 0, 0, 1, 4),
     n1 = c(116,  44, 208, 130, 151,  98, 174,  74,  97, 113,  66,  70, 188, 187, 118, 252, 345,  64)
 ) %>% dplyr::mutate( fn = n1 - tp) %>% dplyr::mutate( yall = n1 ) %>%
-    dplyr::mutate( cx = 0.5)%>%
+    dplyr::mutate( cx = ( tp == 0 | fn==0) *0.5 )%>%
     dplyr::mutate( y = log( ( tp + cx )/( fn + cx )),
                    v = 1/( tp + cx ) + 1/( fn + cx )) %>%
     dplyr::mutate( tmp = y/sqrt(v) ) %>%
@@ -23,8 +23,8 @@ nstudy = nrow(data.x)
 data.opt <- lapply(1:nrow(data.x), FUN = function(ind){
     data.frame( tp = 0:data.x$yall[ind], yall = data.x$n1[ind], n1 = data.x$n1[ind] ) %>%
         dplyr::mutate( yall ) %>% dplyr::mutate( fn = n1 - tp ) %>%
-        # dplyr::mutate( cx = ( ( tp == 0 ) | (fn ==0 ) | (fp == 0 ) | (tn == 0) )*0.5 ) %>%
-        dplyr::mutate( cx = 0.5)%>%
+        dplyr::mutate( cx = ( tp == 0 | fn==0) *0.5 ) %>%
+        # dplyr::mutate( cx = 0.5)%>%
         dplyr::mutate( y = log( ( tp + cx )/( fn + cx ) ), 
                        v = 1/( tp + cx )  + 1/( fn + cx ) )  %>%
         dplyr::mutate( tmp = y/sqrt(v) ) %>% dplyr::mutate(index = ind) %>%
@@ -169,10 +169,10 @@ bn.upper <- round( sapply( result.bn, FUN = function(x) x$upper ) %>% t() %>% `r
 
 M.t <- round(nstudy/seq(1,0.1,-0.1))-nstudy
 
-res.t.all = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
+res.t.only0 = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
                         bn.mean=bn.mean,bn.lower=bn.lower,bn.upper=bn.upper)
 
-save(res.t.all,
-     file = "example2-t-all.RData")
+save(res.t.only0,
+     file = "example2-t-only0.RData")
 
 
