@@ -11,9 +11,7 @@ library(metadat)
 # data = read.csv("niel-weise21.csv")
 # data = read.csv("thomas.csv")
 
-data = dat.pritz1997
-colnames(data)[c(3:4)] = c("y0","n1")
-data$y1=data$n1-data$y0
+
 
 ## Meta-analysis of ORs ----
 # Derive continuous outcomes (lnOR and se)
@@ -77,6 +75,19 @@ sprintf("BN: tau (SE): %.3f (%.3f)",
 
 
 
+
+data = dat.pritz1997
+colnames(data)[c(3:4)] = c("y0","n1")
+data$y1=data$n1-data$y0
+
+data = dat.axfors2021[,c(1,7,9,10)]
+data = data[,c(1,4,3)]
+colnames(data)=c("study","y1","n1")
+
+data = dat.axfors2021[,c(1,7,9,10)]
+data = data[data$Published=="Published",c(1,4,3)]
+# data2 = data[data$Published=="Not published",c(1,4,3)]
+colnames(data)=c("study","y1","n1")
 
 ## Meta-analysis of proportions ----
 #' Derive continuous outcomes (logit-proportion and se)

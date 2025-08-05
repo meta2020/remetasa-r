@@ -7,9 +7,14 @@ file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
 
-data=dat.pritz1997[,-2]
-colnames(data)=c("study","y0","n1")
-data$y1=data$n1-data$y0
+# data=dat.pritz1997[,-2]
+# colnames(data)=c("study","y0","n1")
+# data$y1=data$n1-data$y0
+
+data = dat.axfors2021[,c(1,7,9,10)]
+data = data[data$Published=="Published",c(1,4,3)]
+colnames(data)=c("study","y1","n1")
+
 
 yvi1 = metafor::escalc(measure="PLO", xi=y1, ni=n1, data=data, to = "only0")
 yi1 = yvi1$yi
@@ -202,6 +207,6 @@ save(lgtP_COPAS_BNGLMM,
      lgtP_COPAS2000_1,lgtP_COPAS2000_2,
      lgtP_COPAS1999_1,lgtP_COPAS1999_2,
      tab1_all,
-     file = "res/app3-prop.RData")
+     file = "res/app4-prop.RData")
 
 

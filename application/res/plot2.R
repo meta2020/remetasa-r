@@ -10,6 +10,7 @@ library(kableExtra)
 ## LOAD R DATA
 load("app2-OR.RData")
 load("app2-t-all.RData")
+load
 res.t = cbind.data.frame(only0=res.t.only0,all=res.t.all)
 
 ptheme= theme(panel.background = element_rect(fill = "white", colour = "grey50"),
@@ -22,7 +23,7 @@ ptheme= theme(panel.background = element_rect(fill = "white", colour = "grey50")
              legend.text = element_text(size = 14), 
              legend.background = element_rect(fill = "white", color = "black"))
 py= scale_y_continuous(limits = c(-3,2), name = "lnOR", n.breaks = 10)
-py2= scale_y_continuous(limits = c(-6,5), name = "lnOR", n.breaks = 10)
+py2= scale_y_continuous(limits = c(-3,2), name = "lnOR", n.breaks = 10)
 px1=scale_x_reverse(n.breaks = 10, name="P(publishing studies with smallest sample size)")
 px2=scale_x_reverse(n.breaks = 10, name="P(publishing studies with largest SE)")
 px3=scale_x_reverse(n.breaks = 10, name="P(publishing studies from population)")

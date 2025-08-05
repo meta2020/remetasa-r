@@ -12,10 +12,14 @@ options(warn = -1)
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
-data=dat.pritz1997[,-2]
-colnames(data)=c("study","y0","n1")
-data$y1=data$n1-data$y0
-colnames(data)=c("study","fn","n1","tp")
+# data=dat.pritz1997[,-2]
+# colnames(data)=c("study","y0","n1")
+# data$y1=data$n1-data$y0
+# colnames(data)=c("study","fn","n1","tp")
+
+data = dat.axfors2021[,c(1,7,9,10)]
+data = data[data$Published=="Published",c(1,4,3)]
+colnames(data)=c("study","tp","n1")
 
 data.x <- data %>% 
   dplyr::mutate( fn = n1 - tp) %>% dplyr::mutate( yall = n1 ) %>%
@@ -128,6 +132,6 @@ res.t.only0 = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
                        bn.mean=bn.mean,bn.lower=bn.lower,bn.upper=bn.upper)
 
 save(res.t.all,res.t.only0,
-     file = "res/app3-t-prop.RData")
+     file = "res/app4-t-prop.RData")
 
 

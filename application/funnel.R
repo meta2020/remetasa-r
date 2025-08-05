@@ -7,12 +7,12 @@ rm(list=ls())
 
 library(metafor)
 
+## App1
 # data = read.csv("niel-weise21.csv")
+
+## App2
 data = read.csv("thomas.csv")
-# 
-data=dat.pritz1997[,-2]
-colnames(data)=c("study","y0","n1")
-data$y1=data$n1-data$y0
+
 
 #' Meta-analysis without PB ----------
 #' Data
@@ -28,49 +28,61 @@ yi2 = yvi2[,1]
 vi2 = yvi2[,2]
 
 # Funnel plot
-postscript("funnel1.eps", width = 12, height = 12)
+postscript("funnel2.eps", width = 12, height = 12)
 par(mfcol=c(2,2))
 
 res1 = rma(yi, vi, data=yvi1, method="ML")
-funnel(trimfill(res1,estimator="L0"), xlim = c(-6,4))
+funnel(trimfill(res1,estimator="L0"))
 abline(v=res1$beta)
 reg1 = regtest(res1, model="lm")
 rnk1 = ranktest(res1)
-mtext("A. L0 and continuity correction for only studies with 0 ", side = 3, adj = 0)
-text(-1,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg1$zval, reg1$pval))
-text(-1,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk1$tau, rnk1$pval))
+mtext("A. Fill in the right side (only 0)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg1$zval, reg1$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk1$tau, rnk1$pval),side = 3, adj = 0)
 
 res2 = rma(yi, vi, data=yvi2, method="ML")
-funnel(trimfill(res2,estimator="L0"), xlim = c(-6,4))
+funnel(trimfill(res2,estimator="L0"))
 abline(v=res2$beta)
 reg2 = regtest(res2, model="lm")
 rnk2 = ranktest(res2)
-mtext("B. L0 and continuity correction for all studies", side = 3, adj = 0)
-text(-1,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg2$zval, reg2$pval))
-text(-1,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk2$tau, rnk2$pval))
+mtext("B. Fill in the right side (all)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg2$zval, reg2$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk2$tau, rnk2$pval),side = 3, adj = 0)
 
 
 res3 = rma(yi, vi, data=yvi1, method="ML")
-funnel(trimfill(res3,estimator="R0"), xlim = c(-6,4))
+funnel(trimfill(res3,estimator="R0"))
 abline(v=res3$beta)
 reg3 = regtest(res3, model="lm")
 rnk3 = ranktest(res3)
-mtext("C. R0 and continuity correction for only studies with 0 ", side = 3, adj = 0)
-text(-1,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg3$zval, reg3$pval))
-text(-1,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk3$tau, rnk3$pval))
+mtext("C. Fill in the left side (only 0)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg3$zval, reg3$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk3$tau, rnk3$pval),side = 3, adj = 0)
 
 res4 = rma(yi, vi, data=yvi2, method="ML")
-funnel(trimfill(res4,estimator="R0"), xlim = c(-6,4))
+funnel(trimfill(res4,estimator="R0"))
 abline(v=res4$beta)
 reg4 = regtest(res4, model="lm")
 rnk4 = ranktest(res4)
-mtext("D. R0 and continuity correction for all studies", side = 3, adj = 0)
-text(-1,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg4$zval, reg4$pval))
-text(-1,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk4$tau, rnk4$pval))
+mtext("D. Fill in the left side (all)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg4$zval, reg4$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk4$tau, rnk4$pval),side = 3, adj = 0)
 
 par(mfrow=c(1,1))
 dev.off()
 
+
+
+## App3
+data = dat.axfors2021[,c(1,7,9,10)]
+data1 = data[data$Published=="Published",c(1,4,3)]
+data2 = data[data$Published=="Not published",c(1,4,3)]
+colnames(data)=c("study","y1","n1")
+
+
+data=dat.pritz1997[,-2]
+colnames(data)=c("study","y0","n1")
+data$y1=data$n1-data$y0
 
 ## meta-analysis of proportions
 #' Derive continuous outcomes (yi and vi)
@@ -83,45 +95,45 @@ yi2 = yvi2[,1]
 vi2 = yvi2[,2]
 
 # Funnel plot
-postscript("funnel2.eps", width = 12, height = 12)
+postscript("funnel3.eps", width = 12, height = 12)
 par(mfcol=c(2,2))
 
-res1 = rma(yi1, vi1, data=yvi1)
+res1 = rma(yi, vi, data=yvi1)
 funnel(trimfill(res1,estimator="L0"))
 abline(v=res1$beta)
 reg1 = regtest(res1, model="lm")
 rnk1 = ranktest(res1)
-mtext("A. L0 and continuity correction for only studies with 0 ", side = 3, adj = 0)
-text(-3.5,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg1$zval, reg1$pval))
-text(-3.5,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk1$tau, rnk1$pval))
+mtext("A. Fill in the right side (only 0)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg1$zval, reg1$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk1$tau, rnk1$pval),side = 3, adj = 0)
 
-res2 = rma(yi2, vi2, data=yvi2)
+res2 = rma(yi, vi, data=yvi2)
 funnel(trimfill(res2,estimator="L0"))
 abline(v=res2$beta)
 reg2 = regtest(res2, model="lm")
 rnk2 = ranktest(res2)
-mtext("B. L0 and continuity correction for all studies", side = 3, adj = 0)
-text(-3.5,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg2$zval, reg2$pval))
-text(-3.5,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk2$tau, rnk2$pval))
+mtext("B. Fill in the right side (all)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg2$zval, reg2$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk2$tau, rnk2$pval),side = 3, adj = 0)
 
 
-res3 = rma(yi1, vi1, data=yvi1)
+res3 = rma(yi, vi, data=yvi1)
 funnel(trimfill(res3,estimator="R0"))
 abline(v=res3$beta)
 reg3 = regtest(res3, model="lm")
 rnk3 = ranktest(res3)
-mtext("C. R0 and continuity correction for only studies with 0 ", side = 3, adj = 0)
-text(-3.5,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg3$zval, reg3$pval))
-text(-3.5,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk3$tau, rnk3$pval))
+mtext("C. Fill in the left side (only 0)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg3$zval, reg3$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk3$tau, rnk3$pval),side = 3, adj = 0)
 
-res4 = rma(yi2, vi2, data=yvi2)
+res4 = rma(yi, vi, data=yvi2)
 funnel(trimfill(res4,estimator="R0"))
 abline(v=res4$beta)
 reg4 = regtest(res4, model="lm")
 rnk4 = ranktest(res4)
-mtext("D. R0 and continuity correction for all studies", side = 3, adj = 0)
-text(-3.5,0.05, sprintf("Regression test for funnel plot asymmetry: t = %.3f, p = %.3f", reg4$zval, reg4$pval))
-text(-3.5,0.2, sprintf("Rank test for funnel plot asymmetry: t = %.3f, p = %.3f", rnk4$tau, rnk4$pval))
+mtext("D. Fill in the left side (all)", side = 3, line = 2, adj = 0)
+mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg4$zval, reg4$pval),side = 3, line = 1, adj = 0)
+mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk4$tau, rnk4$pval),side = 3, adj = 0)
 
 par(mfrow=c(1,1))
 dev.off()
