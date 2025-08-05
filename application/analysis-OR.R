@@ -8,8 +8,7 @@ sapply(paste0("Rfn/", file.sources), source)
 library(metafor)
 # data = read.csv("niel-weise21.csv")
 data = read.csv("thomas.csv")
-data = dat.egger2001[,c(1,4,5,6,7)]
-colnames(data)=c("study","y1","n1","y0","n0")
+
 
 #' Meta-analysis without PB ----------
 #' Data
@@ -238,4 +237,4 @@ save(lnOR_COPAS_HNGLMM, lnOR_COPAS_BNGLMM,
      lnOR_COPAS2000_1, lnOR_COPAS2000_2, 
      lnOR_COPAS1999_1, lnOR_COPAS1999_2,
      tab1_all,
-     file = "example2-1.RData")
+     file = "res/app2-OR.RData")

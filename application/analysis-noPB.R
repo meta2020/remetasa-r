@@ -6,9 +6,14 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 library(metafor)
+library(metadat)
 
-sink("analysis-noPB.txt")
-data = read.csv("niel-weise21.csv")
+# data = read.csv("niel-weise21.csv")
+# data = read.csv("thomas.csv")
+
+data = dat.pritz1997
+colnames(data)[c(3:4)] = c("y0","n1")
+data$y1=data$n1-data$y0
 
 ## Meta-analysis of ORs ----
 # Derive continuous outcomes (lnOR and se)
@@ -116,4 +121,8 @@ sprintf("1GBN: theta (95CI, SE): %.3f (%.3f, %.3f; %.3f)",
         lgtP_bn$mu[1], lgtP_bn_lb, lgtP_bn_ub, lgtP_bn$mu[2])
 sprintf("1GBN: tau (SE): %.3f (%.3f)", 
         lgtP_bn$tau[1], lgtP_bn$tau[2])
-on.exit(sink())
+
+
+save(lnOR_nn,lnOR_hn,lnOR_bn,
+     lgtP_nn,lgtP_bn,
+     file = "res/app3-nopb.RData")

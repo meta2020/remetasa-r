@@ -6,65 +6,18 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
-#' Data are from 1. Stijnen T, Hamza TH, Özdemir P. 
-#' Random effects meta-analysis of event outcome in the framework of the 
-#' generalized linear mixed model with applications in sparse data. 
-#' Stat Med. 2010;29(29):3046-3067. 
-data = read.csv("niel-weise21.csv")
 
-#' Derive continuous outcomes (logit-proportion and se)
+data=dat.pritz1997[,-2]
+colnames(data)=c("study","y0","n1")
+data$y1=data$n1-data$y0
+
 yvi1 = metafor::escalc(measure="PLO", xi=y1, ni=n1, data=data, to = "only0")
 yi1 = yvi1$yi
 vi1 = yvi1$vi
-res1 = rma(yi1, vi1, data=yvi1)
-funnel(trimfill(res1,estimator="L0"), xlim = c(-7,0))
-abline(v=res1$beta)
 
 yvi2 = metafor::escalc(measure="PLO", xi=y1, ni=n1, data=data, to = "all")
 yi2 = yvi2$yi
 vi2 = yvi2$vi
-res2 = rma(yi2, vi2, data=yvi2)
-funnel(trimfill(res2,estimator="L0"), xlim = c(-7,0))
-abline(v=res2$beta)
-
-#' Meta-analysis without PB ----------
-#' Data
-y1 = data$y1
-n1 = data$n1
-
-#' NN model
-lgtP_nn = NN_LMM(
-  yi=yi2, vi=vi2, 
-  parset=list(
-    mu.bound = 10, 
-    tau.bound = 5,
-    eps = 1e-3,
-    init.vals = NULL
-  ))
-lgtP_nn_lb = lgtP_nn$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*lgtP_nn$mu[2]
-lgtP_nn_ub = lgtP_nn$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*lgtP_nn$mu[2]
-sprintf("theta (95CI, SE): %.3f (%.3f, %.3f; %.3f)", 
-        lgtP_nn$mu[1], lgtP_nn_lb, lgtP_nn_ub, lgtP_nn$mu[2])
-sprintf("tau (SE): %.3f (%.3f)", 
-        lgtP_nn$tau[1], lgtP_nn$tau[2])
-
-#' BN-GLMM
-lgtP_bn = BN_GLMM_prop(
-  y1 = y1, n1 = n1, 
-  parset = list(
-    mu.bound = 10,
-    tau.bound = 5,
-    eps = 1e-3,
-    integ.limit = 10, 
-    cub.tol = 1e-5,
-    init.vals = NULL))
-lgtP_bn_lb = lgtP_bn$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*lgtP_bn$mu[2]
-lgtP_bn_ub = lgtP_bn$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*lgtP_bn$mu[2]
-sprintf("theta (95CI, SE): %.3f (%.3f, %.3f; %.3f)", 
-        lgtP_bn$mu[1], lgtP_bn_lb, lgtP_bn_ub, lgtP_bn$mu[2])
-sprintf("tau (SE): %.3f (%.3f)", 
-        lgtP_bn$tau[1], lgtP_bn$tau[2])
-
 
 #' Proposed sensitivity analysis for PB in meta-analysis ----------
 #' (Pnmax = 0.999, Pnmin = p_sa)
@@ -76,7 +29,7 @@ lgtP_COPAS_BNGLMM = vapply(
   p_sa, 
   function(p) {
     mod = COPAS_BNGLMM_prop(
-      y1=y1, n1=n1, Pnmax = 0.999, Pnmin = p, 
+      y1=data$y1, n1=data$n1, Pnmax = 0.999, Pnmin = p, 
       parset = list(
         mu.bound = 10,
         tau.bound = 5,
@@ -144,7 +97,7 @@ lgtP_COPAS1999_1 = vapply(
   p_sa, 
   function(p) {
     mod = COPAS1999(
-      yi = yi1, ni = n1, Pnmax = 0.999, Pnmin = p, 
+      yi = yi1, ni = data$n1, Pnmax = 0.999, Pnmin = p, 
       parset = list(
           mu.bound = 10,
           tau.bound = 5,
@@ -165,7 +118,7 @@ lgtP_COPAS1999_2 = vapply(
   p_sa, 
   function(p) {
     mod = COPAS1999(
-      yi = yi2, ni = n1, Pnmax = 0.999, Pnmin = p, 
+      yi = yi2, ni = data$n1, Pnmax = 0.999, Pnmin = p, 
       parset = list(
         mu.bound = 10,
         tau.bound = 5,
@@ -183,17 +136,17 @@ colnames(lgtP_COPAS1999_2) = paste0("p = ", p_sa)
 lgtP_COPAS1999_2
 
 #' NUMBER OF THE UNPUBLISHED
-M_propos = sapply(p_sa, function(p) {
+M_n = sapply(p_sa, function(p) {
   
   P_max = 0.999
   P_min = p
 
-  n_min = min(n1) 
-  n_max = max(n1)
+  n_min = min(data$n1) 
+  n_max = max(data$n1)
   
   a1 = (qnorm(P_max)-qnorm(P_min))/(sqrt(n_max)-sqrt(n_min))
   a0 = qnorm(P_max)-a1*sqrt(n_max)
-  sum((1 - pnorm(a0+a1*sqrt(n1)))/pnorm(a0+a1*sqrt(n1))) 
+  sum((1 - pnorm(a0+a1*sqrt(data$n1)))/pnorm(a0+a1*sqrt(data$n1))) 
   
 })
 
@@ -235,14 +188,7 @@ tab1 = data.frame(
   CN2 = t(lgtP_COPAS1999_2[c(1,3,4),]), 
   M.c1 = round(M_copas1), 
   M.c2 = round(M_copas2), 
-  M.p = round(M_propos)
-)
-
-tab1_p1 = c(
-  BN = lgtP_bn$mu[1], BN.mu.lb = unname(lgtP_bn_lb), BN.mu.ub = unname(lgtP_bn_ub),
-  CH = lgtP_nn$mu[1], NN.mu.lb = unname(lgtP_nn_lb), NN.mu.ub = unname(lgtP_nn_ub),
-  CN = lgtP_nn$mu[1], NN.mu.lb = unname(lgtP_nn_lb), NN.mu.ub = unname(lgtP_nn_ub),
-  M.c = 0, M.p = 0
+  M.p = round(M_n)
 )
 
 # tab1_all = rbind("p = 1" = tab1_p1, tab1)
@@ -255,8 +201,7 @@ tab1_all$pnmax = rep(0.999, 10)
 save(lgtP_COPAS_BNGLMM, 
      lgtP_COPAS2000_1,lgtP_COPAS2000_2,
      lgtP_COPAS1999_1,lgtP_COPAS1999_2,
-     M_propos, M_copas1, M_copas2, tab1_all,
-     lgtP_bn, lgtP_nn,
-     file = "example-bias2.RData")
+     tab1_all,
+     file = "res/app3-prop.RData")
 
 
