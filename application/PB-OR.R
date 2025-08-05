@@ -9,6 +9,11 @@ library(metafor)
 # data = read.csv("niel-weise21.csv")
 data = read.csv("thomas.csv")
 
+data = dat.axfors2021[,c(1,7,9,10,11,12)]
+data = data[data$Published=="Published",]
+# data2 = data[data$Published=="Not published",c(1,4,3)]
+colnames(data)=c("study","Published","n1","y1","n0","y0")
+
 
 #' Meta-analysis without PB ----------
 #' Data

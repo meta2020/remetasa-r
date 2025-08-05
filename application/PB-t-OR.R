@@ -12,13 +12,16 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
-## CC for all studies ----
+
+## Data
 # data <- read.csv("niel-weise21.csv")
 # colnames(data) <- c("study", "fp", "n0", "tp", "n1")
 
-data <- read.csv("thomas.csv")
-colnames(data) <- c("study", "tp", "n1", "fp", "n0")
+# data <- read.csv("thomas.csv")
+# colnames(data) <- c("study", "tp", "n1", "fp", "n0")
 
+
+## CC for all studies ----
 data.x <- data %>% 
   dplyr::mutate( fn = n1 - tp, tn = n0 - fp ) %>% dplyr::mutate( yall = fp + tp ) %>%
   dplyr::mutate( cx = 0.5)%>%
@@ -151,7 +154,7 @@ res.t.only0 = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
                           bn.mean=bn.mean,bn.lower=bn.lower,bn.upper=bn.upper,
                           hn.mean=hn.mean,hn.lower=hn.lower,hn.upper=hn.upper)
 
-save(res.t.all, res.t.only0,
-     file = "res/app2-t-all.RData")
+# save(res.t.all, res.t.only0, file = "res/app1-t-all.RData")
+# save(res.t.all, res.t.only0, file = "res/app2-t-all.RData")
 
 
