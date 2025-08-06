@@ -20,6 +20,8 @@ sapply(paste0("Rfn/", file.sources), source)
 # data <- read.csv("thomas.csv")
 # colnames(data) <- c("study", "tp", "n1", "fp", "n0")
 
+data <- read.csv("egger2001.csv")
+colnames(data) <- c("study", "tp", "n1", "fp", "n0")
 
 ## CC for all studies ----
 data.x <- data %>% 
@@ -154,7 +156,7 @@ res.t.only0 = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
                           bn.mean=bn.mean,bn.lower=bn.lower,bn.upper=bn.upper,
                           hn.mean=hn.mean,hn.lower=hn.lower,hn.upper=hn.upper)
 
-# save(res.t.all, res.t.only0, file = "res/app1-t-all.RData")
+save(res.t.all, res.t.only0, file = "res/app3-t-all.RData")
 # save(res.t.all, res.t.only0, file = "res/app2-t-all.RData")
 
 

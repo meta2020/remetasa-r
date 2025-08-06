@@ -10,8 +10,8 @@ library(metadat)
 
 
 ## Data
-
-data = read.csv("pritz1997.csv")
+data = read.csv("niel-weise21.csv")[,c(1,4,5)]
+# data = read.csv("pritz1997.csv")
 
 ## Meta-analysis of proportions ----
 #' Derive continuous outcomes (logit-proportion and se)

@@ -9,12 +9,17 @@ library(metafor)
 # data = read.csv("niel-weise21.csv")
 data = read.csv("thomas.csv")
 
-data = dat.axfors2021[,c(1,7,9,10,11,12)]
-data = data[data$Published=="Published",]
+# data = dat.axfors2021[,c(1,7,9,10,11,12)]
+# data = data[data$Published=="Published",]
 # data2 = data[data$Published=="Not published",c(1,4,3)]
-colnames(data)=c("study","Published","n1","y1","n0","y0")
+# colnames(data)=c("study","Published","n1","y1","n0","y0")
+# dat <- dat.axfors2021
+# data=dat[dat$Published=="Not published" & dat$hcq_cq=="hcq",9:12]
+# colnames(data)=c("n1","y1","n0","y0")
 
-
+data =dat.egger2001[,c(1,4:7)]
+colnames(data)=c("id","y1","n1","y0","n0")
+write.csv(data,"egger2001.csv")
 #' Meta-analysis without PB ----------
 #' Data
 data$ni=data$n0+data$n1
@@ -242,4 +247,4 @@ save(lnOR_COPAS_HNGLMM, lnOR_COPAS_BNGLMM,
      lnOR_COPAS2000_1, lnOR_COPAS2000_2, 
      lnOR_COPAS1999_1, lnOR_COPAS1999_2,
      tab1_all,
-     file = "res/app2-OR.RData")
+     file = "res/app5-OR.RData")

@@ -77,7 +77,7 @@ tSA=tau.sum[,-(1:4)]
 tSA.sp=sprintf("%.2f", tSA)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(tSA.sp)=colnames(tSA)
 
-pt=sprintf("U[%d, %d]",set$nmin,set$nmax)
+pt=sprintf("U[%d, %d]",set$nmin/2,set$nmax/2)
 pt[-seq(1,18,6)]=""
 
 DF = cbind.data.frame(S=c(S, rep("",5)),
@@ -112,7 +112,7 @@ tDF.all=rbind.data.frame(sum.tab2(15)[[3]], sum.tab2(50)[[3]])
 
 
 tDF.all%>%kbl(., 
-         format = "html",
+         format = "latex",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","$\\tau^2$","$N$",
@@ -130,7 +130,7 @@ tDF.all%>%kbl(.,
            NN$_P$ and BN$_P$ are the estimates based on the population studies;
            NN$_O$ and BN$_O$ are the estimates based on the published studies;
            CN and CS are the Copas-N and Copas-Shi methods;
-           1SBN$^{\\text{prop}}$ are the proposed 1-sample BN model based sensitivity analysis methods;
+           1SBN$^{\\text{prop}}$ are the proposed 1SBN model based sensitivity analysis methods;
            CP indicates the coverage probability.", 
            escape = FALSE, threeparttable = TRUE,  general_title = "")
 

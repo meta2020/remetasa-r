@@ -86,7 +86,7 @@ colnames(tSA.sp)=colnames(tSA)
 
 
 tDF = cbind.data.frame(S=c(S, rep("",17)),
-                      pt, grp, tau2=(set$t.tau)^2,
+                      pt, grp, tau2=(set$t.tau)^2,N=round(n.sum[,1],1), 
                       POP=tPM.sp,PB=tBIAS.sp,SA=tSA.sp)
 
 DF.list = list(DF, DF.cv, tDF)
@@ -103,8 +103,8 @@ tDF.all=rbind.data.frame(sum.tab(15)[[3]], sum.tab(50)[[3]])
 
 
 
-DF.all%>%kbl(., 
-         format = "html",
+tDF.all%>%kbl(., 
+         format = "latex",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","T:C","$\\tau^2$","$N$",

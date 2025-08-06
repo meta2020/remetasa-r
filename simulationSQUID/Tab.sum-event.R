@@ -1,5 +1,3 @@
-sink("output.txt")
-
 library(dplyr)
 library(kableExtra)
 
@@ -142,4 +140,3 @@ RE%>%kbl(.,
            1SBN$_O$ are based on the published studies.", 
            escape = FALSE, threeparttable = TRUE,  general_title = "")
 
-sink()

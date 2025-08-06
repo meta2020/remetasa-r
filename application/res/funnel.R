@@ -14,6 +14,8 @@ data = read.csv("../niel-weise21.csv")
 data = read.csv("../thomas.csv")
 
 
+data =dat.egger2001[,c(4:7)]
+colnames(data)=c("y1","n1","y0","n0")
 
 #' Meta-analysis without PB ----------
 #' Data

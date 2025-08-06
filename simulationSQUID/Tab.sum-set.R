@@ -15,7 +15,7 @@ set[-seq(1,18,3),7]=""
 
 
 set%>%kbl(., 
-         format = "html",
+         format = "latex",
          longtable = F, 
          booktabs = T, 
          col.names = c("$\\theta$","$\\rho$","Total event ($y_i$)","$(P_{max}, P_{min})$",
@@ -40,9 +40,10 @@ set$nmin=sprintf("[%d, %d]", round(set$nmin/2), round(set$nmax/2))
 set=set[,c("t.theta","t.rho","pmax","nmin","t.tau")]
 set1=set[c(1:3,7:9),]
 set1[-1,1:3]=""
-set1[-c(1,3),4]=""
+set1[-c(1,4),4]=""
+rownames(set1)=NULL
 set1%>%kbl(., 
-          format = "html",
+          format = "latex",
           longtable = F, 
           booktabs = T, 
           col.names = c("$\\theta$","$\\rho$","$(P_{max}, P_{min})$",
