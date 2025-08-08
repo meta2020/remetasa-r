@@ -11,10 +11,7 @@ library(metafor)
 # data = read.csv("../niel-weise21.csv")
 
 ## App2
-# data = read.csv("../thomas.csv")
-
-
-data = read.csv("../egger2001.csv")
+# data = read.csv("../egger2001.csv")
 
 #' Meta-analysis without PB ----------
 #' Data
@@ -80,7 +77,7 @@ dev.off()
 ## App3
 data = read.csv("../pritz1997.csv")
 
-
+data = read.csv("../niel-weise21.csv")
 ## meta-analysis of proportions
 #' Derive continuous outcomes (yi and vi)
 yvi1 = escalc(measure="PLO", xi=y1, ni=n1, data=data, to="only0")
@@ -92,11 +89,11 @@ yi2 = yvi2[,1]
 vi2 = yvi2[,2]
 
 # Funnel plot
-postscript("funnel3.eps", width = 12, height = 4)
+# postscript("funnel3.eps", width = 12, height = 4)
 par(mfrow=c(1,2))
 
 res1 = rma(yi, vi, data=yvi1)
-funnel(trimfill(res1,estimator="L0"))
+funnel(trimfill(res1,estimator="L0"),yaxis="sqrtni")
 abline(v=res1$beta)
 reg1 = regtest(res1, model="lm")
 rnk1 = ranktest(res1)
@@ -105,7 +102,7 @@ mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg1$zval, reg1$pval),side 
 mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk1$tau, rnk1$pval),side = 3, adj = 0)
 
 res2 = rma(yi, vi, data=yvi2)
-funnel(trimfill(res2,estimator="L0"))
+funnel(trimfill(res2,estimator="L0"),yaxis="seinv")
 abline(v=res2$beta)
 reg2 = regtest(res2, model="lm")
 rnk2 = ranktest(res2)
@@ -114,7 +111,7 @@ mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg2$zval, reg2$pval),side 
 mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk2$tau, rnk2$pval),side = 3, adj = 0)
 
 par(mfrow=c(1,1))
-dev.off()
+# dev.off()
 
 
 # res3 = rma(yi, vi, data=yvi1)

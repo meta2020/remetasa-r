@@ -1,7 +1,7 @@
 library(magrittr)
 library(kableExtra)
 
-read.csv("egger2001.csv")%>%
+read.csv("pritz1997.csv")[,-2]%>%
   kbl(.,
       format = "latex",
       longtable = F, 
