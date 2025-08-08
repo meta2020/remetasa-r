@@ -12,15 +12,15 @@ options(warn = -1)
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
-data=dat.pritz1997[,-2]
-colnames(data)=c("study","y0","n1")
-data$y1=data$n1-data$y0
-colnames(data)=c("study","fn","n1","tp")
+cores=1L
 
-# data = dat.axfors2021[,c(1,7,9,10)]
-# data = data[data$Published=="Published",c(1,4,3)]
-# colnames(data)=c("study","tp","n1")
+message(paste0("Start",Sys.time()))
 
+data=read.csv("niel-weise21.csv")[,c(1,4,5)]
+colnames(data) <- c("study", "tp", "n1")
+
+data=read.csv("pritz1997.csv")
+colnames(data) <- c("study", "fp", "n1","tp")
 
 ## CC for all studies ----
 data.x <- data %>% 
@@ -63,7 +63,7 @@ v.all <- data.opt.vec$v
 tmp.all <- data.opt.vec$tmp
 addict.all <- data.opt.vec$addictx
 
-result.bn <- lapply((1:10)*0.1, FUN = estimate.bn.prop)
+result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn.prop, mc.cores = cores)
 
 
 # generate table
@@ -119,7 +119,7 @@ v.all <- data.opt.vec$v
 tmp.all <- data.opt.vec$tmp
 addict.all <- data.opt.vec$addictx
 
-result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn.prop, mc.cores = 1L)
+result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn.prop, mc.cores = cores)
 
 
 # generate table
@@ -137,4 +137,4 @@ res.t.only0 = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
 
 save(res.t.all,res.t.only0, file = "res/app3-t-prop.RData")
 
-
+message(paste0("End",Sys.time()))

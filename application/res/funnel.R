@@ -8,14 +8,13 @@ rm(list=ls())
 library(metafor)
 
 ## App1
-data = read.csv("../niel-weise21.csv")
+# data = read.csv("../niel-weise21.csv")
 
 ## App2
-data = read.csv("../thomas.csv")
+# data = read.csv("../thomas.csv")
 
 
-data =dat.egger2001[,c(4:7)]
-colnames(data)=c("y1","n1","y0","n0")
+data = read.csv("../egger2001.csv")
 
 #' Meta-analysis without PB ----------
 #' Data
@@ -23,15 +22,17 @@ colnames(data)=c("y1","n1","y0","n0")
 ## meta-analysis of lnORs
 #' Derive continuous outcomes (lnOR and se)
 yvi1 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, data=data, to="only0")
-yi1 = yvi1[,1]
-vi1 = yvi1[,2]
+yi1 = yvi1$yi
+vi1 = yvi1$vi
+yvi1$t=yi1/sqrt(vi1)
 
 yvi2 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, data=data, to="all")
-yi2 = yvi2[,1]
-vi2 = yvi2[,2]
+yi2 = yvi2$yi
+vi2 = yvi2$vi
+yvi2$t=yi2/sqrt(vi2)
 
 # Funnel plot
-postscript("funnel1.eps", width = 12,height=4)
+postscript("funnel2.eps", width = 12,height=4)
 par(mfrow=c(1,2))
 
 res1 = rma(yi, vi, data=yvi1, method="ML")

@@ -5,16 +5,18 @@
 rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
+library(metafor)
+library(parallel)
+library(magrittr)
 
+cores=1L
+message(paste0("Start ",Sys.time()))
 
-# data=dat.pritz1997[,-2]
-# colnames(data)=c("study","y0","n1")
-# data$y1=data$n1-data$y0
+## App1
+data=read.csv("niel-weise21.csv")[,c(1,4,5)]
 
-data = dat.axfors2021[,c(1,7,9,10)]
-data = data[data$Published=="Published",c(1,4,3)]
-colnames(data)=c("study","y1","n1")
-
+## App2
+# data=read.csv("pritz1997.csv")
 
 yvi1 = metafor::escalc(measure="PLO", xi=y1, ni=n1, data=data, to = "only0")
 yi1 = yvi1$yi
@@ -30,7 +32,7 @@ vi2 = yvi2$vi
 #' 
 #' Proposal for BN-GLMM
 p_sa = c(0.99, seq(0.9, 0.1, -0.1))
-lgtP_COPAS_BNGLMM = vapply(
+lgtP_COPAS_BNGLMM = mclapply(
   p_sa, 
   function(p) {
     mod = COPAS_BNGLMM_prop(
@@ -47,15 +49,15 @@ lgtP_COPAS_BNGLMM = vapply(
     mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
     mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
     c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$a, mod$opt$convergence)
-  }, 
-  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
-    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
-    "a0"=0, "a1"=0, "converge"=0))
-colnames(lgtP_COPAS_BNGLMM) = paste0("p = ", p_sa)
-lgtP_COPAS_BNGLMM
+  }, mc.cores = cores)%>%
+  do.call(rbind.data.frame,.)
+colnames(lgtP_COPAS_BNGLMM)=c("mu", "mu.se", "mu.lb", "mu.ub",
+                              "tau", "tau.se","rho", "rho.se",
+                              "gamma0", "gamma1", "converge")
+lgtP_COPAS_BNGLMM$p=p_sa
 
 #' Copas-Heckman-type selection model (2000)
-lgtP_COPAS2000_1 = vapply(
+lgtP_COPAS2000_1 = mclapply(
   p_sa, 
   function(p) {
     mod = COPAS2000(
@@ -69,14 +71,14 @@ lgtP_COPAS2000_1 = vapply(
     mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
     mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
     c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
-  }, 
-  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
-    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
-    "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lgtP_COPAS2000_1) = paste0("p = ", p_sa)
-lgtP_COPAS2000_1
+  }, mc.cores = cores)%>%
+  do.call(rbind.data.frame,.)
+colnames(lgtP_COPAS2000_1)=c("mu", "mu.se", "mu.lb", "mu.ub",
+                              "tau", "tau.se","rho", "rho.se",
+                              "gamma0", "gamma1", "converge")
+lgtP_COPAS2000_1$p=p_sa
 
-lgtP_COPAS2000_2 = vapply(
+lgtP_COPAS2000_2 = mclapply(
   p_sa, 
   function(p) {
     mod = COPAS2000(
@@ -90,15 +92,15 @@ lgtP_COPAS2000_2 = vapply(
     mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
     mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
     c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
-  }, 
-  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
-    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
-    "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lgtP_COPAS2000_2) = paste0("p = ", p_sa)
-lgtP_COPAS2000_2
+  }, mc.cores = cores)%>%
+  do.call(rbind.data.frame,.)
+colnames(lgtP_COPAS2000_2)=c("mu", "mu.se", "mu.lb", "mu.ub",
+                             "tau", "tau.se","rho", "rho.se",
+                             "gamma0", "gamma1", "converge")
+lgtP_COPAS2000_2$p=p_sa
 
 #' Copas-N-type selection model (2000)
-lgtP_COPAS1999_1 = vapply(
+lgtP_COPAS1999_1 = mclapply(
   p_sa, 
   function(p) {
     mod = COPAS1999(
@@ -112,14 +114,14 @@ lgtP_COPAS1999_1 = vapply(
     mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
     mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
     c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
-  }, 
-  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
-    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
-    "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lgtP_COPAS1999_1) = paste0("p = ", p_sa)
-lgtP_COPAS1999_1
+  }, mc.cores = cores)%>%
+  do.call(rbind.data.frame,.)
+colnames(lgtP_COPAS1999_1)=c("mu", "mu.se", "mu.lb", "mu.ub",
+                             "tau", "tau.se","rho", "rho.se",
+                             "gamma0", "gamma1", "converge")
+lgtP_COPAS1999_1$p=p_sa
 
-lgtP_COPAS1999_2 = vapply(
+lgtP_COPAS1999_2 = mclapply(
   p_sa, 
   function(p) {
     mod = COPAS1999(
@@ -133,12 +135,12 @@ lgtP_COPAS1999_2 = vapply(
     mu_lb = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = TRUE)*mod$mu[2]
     mu_ub = mod$mu[1] + qnorm((1-0.95)/2, lower.tail = FALSE)*mod$mu[2]
     c(mod$mu, mu_lb, mu_ub, mod$tau[1:2], mod$rho, mod$gamma, mod$opt$convergence)
-  }, 
-  c("mu"=0, "mu.se"=0, "mu.lb"=0, "mu.ub"=0, 
-    "tau"=0, "tau.se"=0,"rho"=0, "rho.se"=0, 
-    "gamma0"=0, "gamma1"=0, "converge"=0))
-colnames(lgtP_COPAS1999_2) = paste0("p = ", p_sa)
-lgtP_COPAS1999_2
+  }, mc.cores = cores)%>%
+  do.call(rbind.data.frame,.)
+colnames(lgtP_COPAS1999_2)=c("mu", "mu.se", "mu.lb", "mu.ub",
+                             "tau", "tau.se","rho", "rho.se",
+                             "gamma0", "gamma1", "converge")
+lgtP_COPAS1999_2$p=p_sa
 
 #' NUMBER OF THE UNPUBLISHED
 M_n = sapply(p_sa, function(p) {
@@ -186,11 +188,11 @@ M_copas2 = sapply(p_sa, function(p) {
 
 #' Table 1
 tab1 = data.frame(
-  BN = t(lgtP_COPAS_BNGLMM[c(1,3,4),]),
-  CH1 = t(lgtP_COPAS2000_1[c(1,3,4),]), # copas-heckman
-  CH2 = t(lgtP_COPAS2000_2[c(1,3,4),]), # copas-heckman
-  CN1 = t(lgtP_COPAS1999_1[c(1,3,4),]), # copas-n
-  CN2 = t(lgtP_COPAS1999_2[c(1,3,4),]), 
+  BN = (lgtP_COPAS_BNGLMM[,c(1,3,4)]),
+  CH1 = (lgtP_COPAS2000_1[,c(1,3,4)]), # copas-heckman
+  CH2 = (lgtP_COPAS2000_2[,c(1,3,4)]), # copas-heckman
+  CN1 = (lgtP_COPAS1999_1[,c(1,3,4)]), # copas-n
+  CN2 = (lgtP_COPAS1999_2[,c(1,3,4)]), 
   M.c1 = round(M_copas1), 
   M.c2 = round(M_copas2), 
   M.p = round(M_n)
@@ -203,10 +205,10 @@ tab1_all$pnmax = rep(0.999, 10)
 
 #' SAVE RESULTS1
 #' 
-save(lgtP_COPAS_BNGLMM, 
-     lgtP_COPAS2000_1,lgtP_COPAS2000_2,
-     lgtP_COPAS1999_1,lgtP_COPAS1999_2,
-     tab1_all,
-     file = "res/app4-prop.RData")
+# save(lgtP_COPAS_BNGLMM, 
+#      lgtP_COPAS2000_1,lgtP_COPAS2000_2,
+#      lgtP_COPAS1999_1,lgtP_COPAS1999_2,
+#      tab1_all,
+#      file = "res/app3-prop.RData")
 
-
+message(paste0("End ",Sys.time()))

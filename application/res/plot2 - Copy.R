@@ -9,7 +9,7 @@ library(kableExtra)
 
 ## LOAD R DATA
 load("app5-OR.RData")
-load("app2-t-all.RData")
+load("app3-t-all.RData")
 
 
 res.t = cbind.data.frame(only0=res.t.only0,all=res.t.all)
@@ -44,7 +44,7 @@ p1 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_point(aes(y = BN.mu, colour="The proposed BN model based method"), size=3) +
   geom_line(aes(y = BN.mu, colour="The proposed BN model based method"), lty=1, size=1) +
   px1 + py + ptheme+
-  geom_text(aes(y = HN.mu, label = as.character(M.p)), vjust = -2)+
+  geom_text(aes(y = BN.mu, label = as.character(M.p)), vjust = -2)+
   geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
   labs(title = "(A)")+  
   scale_colour_manual(breaks = c("The proposed HN model based method","The proposed BN model based method"),
@@ -111,4 +111,4 @@ p4 = ggplot(res.t, aes(x = only0.p)) +
 
 
 p=grid.arrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
-ggsave(filename = "plot2.eps", plot = p, device = cairo_ps, width = 12, height = 12) 
+ggsave(filename = "plot2.eps", plot = p, device = cairo_ps, width = 12, height = 12)

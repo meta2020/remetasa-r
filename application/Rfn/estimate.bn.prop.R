@@ -44,7 +44,7 @@ estimate.bn.prop  <- function(p = 0.7){
         
       }
       
-      alpha.opt <- uniroot(f.a, lower = -20, upper = 10, extendInt = 'yes')$root
+      alpha.opt <- uniroot(f.a, lower = -10, upper = 10, extendInt = 'yes')$root
       
       prob.prior <- with(data.x, cubature::hcubature( f = function(tvec){
         p1 <- 1/(1 + exp(-(tau*tvec + mu)))

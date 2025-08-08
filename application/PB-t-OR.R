@@ -12,13 +12,13 @@ rm(list=ls())
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 
+cores=1L
 
+message(paste0("Start ",Sys.time()))
 ## Data
 # data <- read.csv("niel-weise21.csv")
 # colnames(data) <- c("study", "fp", "n0", "tp", "n1")
 
-# data <- read.csv("thomas.csv")
-# colnames(data) <- c("study", "tp", "n1", "fp", "n0")
 
 data <- read.csv("egger2001.csv")
 colnames(data) <- c("study", "tp", "n1", "fp", "n0")
@@ -71,8 +71,8 @@ tmp.all <- data.opt.vec$tmp
 addict.all <- data.opt.vec$addictx
 
 
-result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn, mc.cores = 1L)
-result.hn <- mclapply((1:10)*0.1, FUN = estimate.hn, mc.cores = 1L)
+result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn, mc.cores = cores)
+result.hn <- mclapply((1:10)*0.1, FUN = estimate.hn, mc.cores = cores)
 
 # generate table
 
@@ -138,8 +138,8 @@ tmp.all <- data.opt.vec$tmp
 addict.all <- data.opt.vec$addictx
 
 
-result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn, mc.cores = 1L)
-result.hn <- mclapply((1:10)*0.1, FUN = estimate.hn, mc.cores = 1L)
+result.bn <- mclapply((1:10)*0.1, FUN = estimate.bn, mc.cores = cores)
+result.hn <- mclapply((1:10)*0.1, FUN = estimate.hn, mc.cores = cores)
 
 # generate table
 
@@ -156,7 +156,7 @@ res.t.only0 = data.frame(M.t=M.t, p=seq(1,0.1,-0.1),
                           bn.mean=bn.mean,bn.lower=bn.lower,bn.upper=bn.upper,
                           hn.mean=hn.mean,hn.lower=hn.lower,hn.upper=hn.upper)
 
-save(res.t.all, res.t.only0, file = "res/app3-t-all.RData")
+# save(res.t.all, res.t.only0, file = "res/app3-t-all.RData")
 # save(res.t.all, res.t.only0, file = "res/app2-t-all.RData")
 
-
+message(paste0("End ",Sys.time()))
