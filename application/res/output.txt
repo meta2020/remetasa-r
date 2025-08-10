@@ -1,0 +1,122 @@
+\begin{table}[!htbp]
+
+\caption{\label{tab:tab1-1}Example 1: summary of the estimations of different sensitivity analysis methods}
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{rrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{} & \multicolumn{3}{c}{The proposed 1SBN model based method} \\
+\cmidrule(l{3pt}r{3pt}){3-5}
+$(\Pmin, \Pmax)$ & $M$ & $\theta$ (95\% CI) & $\tau$ & $\rho$\\
+\midrule
+(0.99, 0.999) & 0 & -1.374 (-1.941, -0.808) & 0.774 & -0.990\\
+(0.90, 0.999) & 1 & -1.338 (-1.893, -0.782) & 0.805 & -0.990\\
+(0.80, 0.999) & 1 & -1.291 (-1.826, -0.755) & 0.813 & -0.990\\
+(0.70, 0.999) & 2 & -1.265 (-1.830, -0.700) & 0.805 & -0.871\\
+(0.60, 0.999) & 3 & -1.245 (-1.831, -0.659) & 0.798 & -0.776\\
+(0.50, 0.999) & 5 & -1.224 (-1.827, -0.621) & 0.790 & -0.709\\
+(0.40, 0.999) & 7 & -1.203 (-1.823, -0.583) & 0.783 & -0.658\\
+(0.30, 0.999) & 10 & -1.180 (-1.817, -0.542) & 0.776 & -0.614\\
+(0.20, 0.999) & 16 & -1.153 (-1.811, -0.495) & 0.767 & -0.570\\
+(0.10, 0.999) & 32 & -1.119 (-1.803, -0.434) & 0.754 & -0.516\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item $M$ indicates the number of potentially unpublished studies; 
+           CI indicates the confidence interval.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\begin{table}[!htbp]
+
+\caption{\label{tab:tab1-2}Example 1: summary of the estimations of different sensitivity analysis methods}
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{rrrrrrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{4}{c}{The Copas-N method (only0)} & \multicolumn{4}{c}{The Copas-N method (all)} \\
+\cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9}
+$(\Pmin, \Pmax)$ & $M_1$ & $\theta$ (95\% CI) & $\tau$ & $\rho$ & $M_2$ & $\theta$ (95\% CI) & $\tau$ & $\rho$\\
+\midrule
+(0.99, 0.999) & 0 & -1.512 (-2.055, -0.969) & 0.998 & -0.990 & 0 & -1.393 (-1.911, -0.876) & 0.947 & -0.990\\
+(0.90, 0.999) & 1 & -1.424 (-1.885, -0.964) & 1.059 & -0.990 & 1 & -1.326 (-1.767, -0.885) & 0.994 & -0.990\\
+(0.80, 0.999) & 1 & -1.361 (-2.087, -0.635) & 1.081 & -0.836 & 1 & -1.146 (-1.562, -0.729) & 1.110 & -0.990\\
+(0.70, 0.999) & 2 & -1.406 (-2.100, -0.711) & 1.026 & -0.483 & 2 & -1.315 (-2.017, -0.612) & 0.963 & -0.375\\
+(0.60, 0.999) & 4 & -1.392 (-2.083, -0.702) & 1.021 & -0.417 & 3 & -1.307 (-1.993, -0.621) & 0.960 & -0.316\\
+(0.50, 0.999) & 5 & -1.376 (-2.080, -0.672) & 1.018 & -0.379 & 5 & -1.295 (-1.990, -0.601) & 0.958 & -0.287\\
+(0.40, 0.999) & 8 & -1.358 (-2.080, -0.636) & 1.015 & -0.351 & 7 & -1.282 (-1.991, -0.573) & 0.956 & -0.266\\
+(0.30, 0.999) & 12 & -1.338 (-2.081, -0.594) & 1.011 & -0.326 & 10 & -1.267 (-1.993, -0.541) & 0.955 & -0.249\\
+(0.20, 0.999) & 19 & -1.314 (-2.082, -0.546) & 1.007 & -0.302 & 15 & -1.249 (-1.995, -0.502) & 0.952 & -0.232\\
+(0.10, 0.999) & 39 & -1.283 (-2.082, -0.484) & 1.002 & -0.273 & 31 & -1.224 (-1.997, -0.451) & 0.949 & -0.212\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item $M_1$ and $M_2$ indicate the number of potentially unpublished studies; 
+  only 0 indicates continuity correction for only studies with 0 cells;
+  all indicates continuity correction for all the studies; 
+           CI indicates the confidence interval.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\begin{table}[!htbp]
+
+\caption{\label{tab:tab1-3}Example 1: summary of the estimations of different sensitivity analysis methods}
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{rrrrrrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{4}{c}{The Copas-Shi method (only0)} & \multicolumn{4}{c}{The Copas-Shi method (all)} \\
+\cmidrule(l{3pt}r{3pt}){2-5} \cmidrule(l{3pt}r{3pt}){6-9}
+$(\Pmin, \Pmax)$ & $M_1$ & $\theta$ (95\% CI) & $\tau$ & $\rho$ & $M_2$ & $\theta$ (95\% CI) & $\tau$ & $\rho$\\
+\midrule
+(0.99, 0.999) & 0 & -1.102 (-1.577, -0.626) & 0.535 & -0.990 & 0 & -1.042 (-1.474, -0.611) & 0.495 & -0.990\\
+(0.90, 0.999) & 1 & -1.037 (-1.492, -0.583) & 0.495 & -0.990 & 1 & -0.994 (-1.413, -0.576) & 0.466 & -0.990\\
+(0.80, 0.999) & 1 & -0.992 (-1.434, -0.549) & 0.475 & -0.990 & 1 & -0.958 (-1.369, -0.548) & 0.451 & -0.990\\
+(0.70, 0.999) & 2 & -0.953 (-1.386, -0.519) & 0.465 & -0.990 & 2 & -0.926 (-1.330, -0.522) & 0.442 & -0.990\\
+(0.60, 0.999) & 4 & -0.916 (-1.339, -0.492) & 0.459 & -0.985 & 3 & -0.893 (-1.289, -0.497) & 0.436 & -0.990\\
+(0.50, 0.999) & 5 & -0.869 (-1.278, -0.459) & 0.451 & -0.990 & 5 & -0.855 (-1.241, -0.468) & 0.430 & -0.990\\
+(0.40, 0.999) & 8 & -0.804 (-1.194, -0.414) & 0.441 & -0.990 & 7 & -0.803 (-1.176, -0.431) & 0.423 & -0.990\\
+(0.30, 0.999) & 12 & -0.693 (-1.060, -0.326) & 0.435 & -0.990 & 10 & -0.718 (-1.068, -0.368) & 0.410 & -0.990\\
+(0.20, 0.999) & 19 & -0.736 (-1.209, -0.264) & 0.439 & -0.810 & 15 & -0.729 (-1.176, -0.282) & 0.423 & -0.829\\
+(0.10, 0.999) & 39 & -0.742 (-1.212, -0.273) & 0.439 & -0.671 & 31 & -0.733 (-1.177, -0.289) & 0.422 & -0.685\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item $M_1$ and $M_2$ indicate the number of potentially unpublished studies; 
+  only 0 indicates continuity correction for only studies with 0 cells;
+  all indicates continuity correction for all the studies; 
+           CI indicates the confidence interval.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\begin{table}[!htbp]
+
+\caption{\label{tab:tab1-4}Example 1: summary of the estimations of different sensitivity analysis methods}
+\centering
+\begin{threeparttable}
+\begin{tabular}[t]{rrrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{} & \multicolumn{2}{c}{The t-statistic and HN model based method (only0)} & \multicolumn{2}{c}{The t-statistic and HN model based method (all)} \\
+\cmidrule(l{3pt}r{3pt}){3-4} \cmidrule(l{3pt}r{3pt}){5-6}
+$p$ & $M$ & $\theta$ (95\% CI) & $\tau$ & $\theta$ (95\% CI) & $\tau$\\
+\midrule
+1.00 & 0 & -1.377 (-1.942, -0.811) & 0.768 & -1.377 (-1.942, -0.811) & 0.768\\
+0.90 & 2 & -1.446 (-2.013, -0.879) & 0.776 & -1.439 (-2.002, -0.876) & 0.770\\
+0.80 & 4 & -1.500 (-2.079, -0.922) & 0.771 & -1.490 (-2.058, -0.922) & 0.763\\
+0.70 & 6 & -0.721 (-1.110, -0.332) & 1.417 & -0.721 (-1.109, -0.332) & 1.418\\
+0.60 & 9 & -0.374 (-0.693, -0.055) & 1.631 & -0.373 (-0.693, -0.054) & 1.632\\
+0.50 & 14 & 0.052 (-0.280, 0.383) & 1.853 & 0.052 (-0.279, 0.383) & 1.853\\
+0.40 & 21 & -1.670 (-2.302, -1.038) & 0.718 & -1.651 (-2.261, -1.041) & 0.707\\
+0.30 & 33 & -1.710 (-2.360, -1.060) & 0.700 & -1.689 (-2.314, -1.065) & 0.687\\
+0.20 & 56 & -1.752 (-2.424, -1.081) & 0.677 & -1.731 (-2.372, -1.089) & 0.664\\
+0.10 & 126 & -1.803 (-2.507, -1.100) & 0.648 & -1.781 (-2.448, -1.113) & 0.633\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item $M$ indicates the number of potentially unpublished studies; 
+  only 0 indicates continuity correction for only studies with 0 cells;
+  all indicates continuity correction for all the studies; 
+           CI indicates the confidence interval.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
