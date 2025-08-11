@@ -10,8 +10,8 @@ library(metadat)
 
 
 ## Data
-data = read.csv("niel-weise21.csv")
-# data = read.csv("thomas.csv")
+# data = read.csv("niel-weise21.csv")
+data = read.csv("egger2001.csv")
 
 ## Meta-analysis of ORs ----
 # Derive continuous outcomes (lnOR and se)
@@ -80,4 +80,4 @@ sprintf("BN: tau (SE): %.3f (%.3f)",
 # rma.glmm(measure = "OR", ai=y1, bi=n1-y1,ci=y0,di=n0-y0, data = data, model = "CM.AL")
 
 # save(lnOR_nn,lnOR_hn,lnOR_bn, file = "res/app1-nopb.RData")
-# save(lnOR_nn,lnOR_hn,lnOR_bn, file = "res/app2-nopb.RData")
+save(lnOR_nn,lnOR_hn,lnOR_bn, file = "res/app2-nopb.RData")

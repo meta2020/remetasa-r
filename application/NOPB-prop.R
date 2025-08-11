@@ -10,8 +10,8 @@ library(metadat)
 
 
 ## Data
-data = read.csv("niel-weise21.csv")[,c(1,4,5)]
-# data = read.csv("pritz1997.csv")
+# data = read.csv("niel-weise21.csv")[,c(1,4,5)]
+data = read.csv("pritz1997.csv")
 
 ## Meta-analysis of proportions ----
 #' Derive continuous outcomes (logit-proportion and se)
@@ -58,4 +58,4 @@ sprintf("1GBN: tau (SE): %.3f (%.3f)",
         lgtP_bn$tau[1], lgtP_bn$tau[2])
 
 
-save(lgtP_nn,lgtP_bn, file = "res/app3-nopb.RData")
+# save(lgtP_nn,lgtP_bn, file = "res/app3-nopb.RData")
