@@ -9,7 +9,7 @@ library(kableExtra)
 
 ## LOAD R DATA
 load("app2-OR.RData")
-load("app2-t-all.RData")
+load("app2-t-OR.RData")
 
 
 res.t = cbind.data.frame(only0=res.t.only0,all=res.t.all)
@@ -39,15 +39,15 @@ p1 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_point(aes(y = HN.mu, colour="The proposed HN model based method"), size=3) +
   geom_line(aes(y = HN.mu, colour="The proposed HN model based method"), lty=1, linewidth=1) +
   geom_ribbon(aes(ymin = BN.mu.lb, ymax = BN.mu.ub), alpha = 0.1, fill = "#e41a1c", na.rm = TRUE) + 
-  geom_line(aes(y = BN.mu.lb, colour="The proposed BN model based method"), lty=2, size=1) +
-  geom_line(aes(y = BN.mu.ub, colour="The proposed BN model based method"), lty=2, size=1) +
-  geom_point(aes(y = BN.mu, colour="The proposed BN model based method"), size=3) +
-  geom_line(aes(y = BN.mu, colour="The proposed BN model based method"), lty=1, size=1) +
+  geom_line(aes(y = BN.mu.lb, colour="The proposed CBN model based method"), lty=2, size=1) +
+  geom_line(aes(y = BN.mu.ub, colour="The proposed CBN model based method"), lty=2, size=1) +
+  geom_point(aes(y = BN.mu, colour="The proposed CBN model based method"), size=3) +
+  geom_line(aes(y = BN.mu, colour="The proposed CBN model based method"), lty=1, size=1) +
   px1 + py + ptheme+
   geom_text(aes(y = HN.mu, label = as.character(M.p)), vjust = -2)+
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
   labs(title = "(A)")+  
-  scale_colour_manual(breaks = c("The proposed HN model based method","The proposed BN model based method"),
+  scale_colour_manual(breaks = c("The proposed HN model based method","The proposed CBN model based method"),
                       values = c("#377eb8","#e41a1c"), guide = pguide)
 
 
@@ -64,7 +64,7 @@ p2 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_line(aes(y = CN2.mu.ub, colour="The Copas-N method (all)"),lty=2, size=1) +
   geom_point(aes(y = CN2.mu, colour="The Copas-N method (all)"), size=3) +
   geom_line(aes(y = CN2.mu, colour="The Copas-N method (all)"),lty=1, size=1) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
   px1 + py + ptheme +
   geom_text(aes(y = CN1.mu, label = as.character(M.p)), vjust = -2)+
   labs(title = "(B)")+  
@@ -85,7 +85,7 @@ p3 = ggplot(tab1_all, aes(x = pnmin)) +
   px2 + py + ptheme +
   geom_text(aes(y = CH1.mu, label = as.character(M.c1)), vjust = 2)+
   geom_text(aes(y = CH2.mu, label = as.character(M.c2)), vjust = -1.5)+
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
   labs(title = "(C)")+  
   scale_colour_manual(breaks = c("The Copas-Shi method (only0)","The Copas-Shi method (all)"), 
                       values = c("#984ea3","#beaed4"), guide = pguide)
@@ -104,7 +104,7 @@ p4 = ggplot(res.t, aes(x = only0.p)) +
   geom_line(aes(y = all.hn.mean.1, colour="The t-statistic and HN model based method (all)"),lty=1, size=1) +
   px3 + py2 + ptheme +
   geom_text(aes(y = all.hn.mean.1, label = as.character(only0.M.t)), vjust = -2)+
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
+  #geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
   labs(title = "(D)")+  
   scale_colour_manual(breaks = c("The t-statistic and HN model based method (only0)","The t-statistic and HN model based method (all)"), 
                       values = c("#ff7f00","#fdc086"), guide = pguide)

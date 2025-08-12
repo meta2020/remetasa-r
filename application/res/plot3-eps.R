@@ -41,14 +41,14 @@ pguide=guide_legend(override.aes = list(lty = 1, size = 1))
 
 p1 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_ribbon(aes(ymin = BN.mu.lb, ymax = BN.mu.ub), alpha = 0, fill = "#d7191c", na.rm = TRUE) + 
-  geom_line(aes(y = BN.mu.lb, colour="The proposed BN model based method"), lty=2, size=1) +
-  geom_line(aes(y = BN.mu.ub, colour="The proposed BN model based method"), lty=2, size=1) +
-  geom_point(aes(y = BN.mu, colour="The proposed BN model based method"), size=3) +
-  geom_line(aes(y = BN.mu, colour="The proposed BN model based method"), lty=1, size=1) +
+  geom_line(aes(y = BN.mu.lb, colour="The proposed 1SBN model based method"), lty=2, size=1) +
+  geom_line(aes(y = BN.mu.ub, colour="The proposed 1SBN model based method"), lty=2, size=1) +
+  geom_point(aes(y = BN.mu, colour="The proposed 1SBN model based method"), size=3) +
+  geom_line(aes(y = BN.mu, colour="The proposed 1SBN model based method"), lty=1, size=1) +
   px1 + py + ptheme+
   geom_text(aes(y = BN.mu, label = as.character(M.p)), vjust = -2)+
   labs(title = "C")+  
-  scale_colour_manual(breaks = "The proposed BN model based method", values = "#e41a1c", guide = pguide)
+  scale_colour_manual(breaks = "The proposed 1SBN model based method", values = "#e41a1c", guide = pguide)
 
 p2 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_ribbon(aes(ymin = CN1.mu.lb, ymax = CN1.mu.ub), alpha = 0, fill = "#4daf4a", na.rm = TRUE) + 
@@ -87,19 +87,19 @@ p3 = ggplot(tab1_all, aes(x = pnmin)) +
 
 p4 = ggplot(res.t, aes(x = only0.p)) +
   geom_ribbon(aes(ymin = only0.bn.lower.1, ymax = only0.bn.upper.1), alpha = 0, fill = "#ff7f00", na.rm = TRUE) + 
-  geom_line(aes(y = only0.bn.lower.1, colour="The t-statistic and BN model based method (only0)"), lty=2, size=1) +
-  geom_line(aes(y = only0.bn.upper.1, colour="The t-statistic and BN model based method (only0)"), lty=2, size=1) +
-  geom_point(aes(y = only0.bn.mean.1, colour="The t-statistic and BN model based method (only0)"), size=3) +
-  geom_line(aes(y = only0.bn.mean.1, colour="The t-statistic and BN model based method (only0)"), lty=1, size=1) +
+  geom_line(aes(y = only0.bn.lower.1, colour="The t-statistic method (only0)"), lty=2, size=1) +
+  geom_line(aes(y = only0.bn.upper.1, colour="The t-statistic method (only0)"), lty=2, size=1) +
+  geom_point(aes(y = only0.bn.mean.1, colour="The t-statistic method (only0)"), size=3) +
+  geom_line(aes(y = only0.bn.mean.1, colour="The t-statistic method (only0)"), lty=1, size=1) +
   geom_ribbon(aes(ymin = all.bn.lower.1, ymax = all.bn.upper.1), alpha = 0, fill = "#fdc086", na.rm = TRUE) + 
-  geom_line(aes(y = all.bn.lower.1, colour="The t-statistic and BN model based method (all)"), lty=2, size=1) +
-  geom_line(aes(y = all.bn.upper.1, colour="The t-statistic and BN model based method (all)"), lty=2, size=1) +
-  geom_point(aes(y = all.bn.mean.1, colour="The t-statistic and BN model based method (all)"), size=3) +
-  geom_line(aes(y = all.bn.mean.1, colour="The t-statistic and BN model based method (all)"), lty=1, size=1) +
+  geom_line(aes(y = all.bn.lower.1, colour="The t-statistic method (all)"), lty=2, size=1) +
+  geom_line(aes(y = all.bn.upper.1, colour="The t-statistic method (all)"), lty=2, size=1) +
+  geom_point(aes(y = all.bn.mean.1, colour="The t-statistic method (all)"), size=3) +
+  geom_line(aes(y = all.bn.mean.1, colour="The t-statistic method (all)"), lty=1, size=1) +
   px3 + py2 + ptheme+
   geom_text(aes(y = all.bn.mean.1, label = as.character(only0.M.t)), vjust = -2)+
   labs(title = "F")+  
-  scale_colour_manual(breaks = c("The t-statistic and BN model based method (only0)","The t-statistic and BN model based method (all)"), 
+  scale_colour_manual(breaks = c("The t-statistic method (only0)","The t-statistic method (all)"), 
                       values = c("#ff7f00","#fdc086"), guide = pguide)
 
 

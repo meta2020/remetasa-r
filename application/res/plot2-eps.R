@@ -47,15 +47,15 @@ p1 = ggplot(tab1_all, aes(x = pnmin)) +
   geom_point(aes(y = HN.mu, colour="The proposed HN model based method"), size=3) +
   geom_line(aes(y = HN.mu, colour="The proposed HN model based method"), lty=1, linewidth=1) +
   geom_ribbon(aes(ymin = BN.mu.lb, ymax = BN.mu.ub), alpha = 0, fill = "#e41a1c", na.rm = TRUE) + 
-  geom_line(aes(y = BN.mu.lb, colour="The proposed BN model based method"), lty=2, size=1) +
-  geom_line(aes(y = BN.mu.ub, colour="The proposed BN model based method"), lty=2, size=1) +
-  geom_point(aes(y = BN.mu, colour="The proposed BN model based method"), size=3) +
-  geom_line(aes(y = BN.mu, colour="The proposed BN model based method"), lty=1, size=1) +
+  geom_line(aes(y = BN.mu.lb, colour="The proposed CBN model based method"), lty=2, size=1) +
+  geom_line(aes(y = BN.mu.ub, colour="The proposed CBN model based method"), lty=2, size=1) +
+  geom_point(aes(y = BN.mu, colour="The proposed CBN model based method"), size=3) +
+  geom_line(aes(y = BN.mu, colour="The proposed CBN model based method"), lty=1, size=1) +
   px1 + py + ptheme+
   geom_text(aes(y = HN.mu, label = as.character(M.p)), vjust = -2)+
   #geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey",size=1)+
   labs(title = "C")+  
-  scale_colour_manual(breaks = c("The proposed HN model based method","The proposed BN model based method"),
+  scale_colour_manual(breaks = c("The proposed HN model based method","The proposed CBN model based method"),
                       values = c("#377eb8","#e41a1c"), guide = pguide)
 
 
