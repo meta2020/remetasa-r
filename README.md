@@ -21,7 +21,7 @@ If they are not installed, please install from R CRAN `install.packages("package
 
 ## R codes for simulation
 
-- Reproducible R coeds are in folder \simulation
+- Reproducible R coeds are in folder \simulationSQUID
 
 
 
