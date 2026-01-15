@@ -1,0 +1,11 @@
+        Rfn/fn-copas1999.R Rfn/fn-copas2000.R Rfn/fn-glmm-nopb.R Rfn/fn-glmm-pb.R Rfn/fn-htj-bn.R
+value   ?                  ?                  ?                  ?                ?              
+visible FALSE              FALSE              FALSE              FALSE            FALSE          
+        Rfn/fn-htj-hn.R Rfn/gen.data.1bn-missel.R Rfn/gen.data.1bn.R Rfn/gen.data.2bn-missel.R
+value   ?               ?                         ?                  ?                        
+visible FALSE           FALSE                     FALSE              FALSE                    
+        Rfn/gen.data.2bn.R Rfn/gen.data.2hn-missel.R Rfn/gen.data.2hn.R Rfn/set.R 
+value   ?                  ?                         ?                  numeric,18
+visible FALSE              FALSE                     FALSE              FALSE     
+G3;Start2026-01-15 16:19:16.839213
+g
