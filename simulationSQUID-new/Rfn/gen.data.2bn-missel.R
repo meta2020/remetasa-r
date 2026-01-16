@@ -7,7 +7,9 @@ gendata.2bn.hedges = function(
     n_min, n_max, p0,
     gr,
     theta,tau,rho,
-    Pnmax, Pnmin){
+    Pnmax, Pnmin,
+    cutoff=c(0.05,0.1), ## <0.05, <0.1, others
+    wi=c(0.5,0.3)){     ## 1,0.5,0.3
   
     n = runif( s, min = n_min, max = n_max )
     n = ifelse(n<20,20,n)
@@ -36,21 +38,26 @@ gendata.2bn.hedges = function(
       c(yi1,ni1,yi0,ni0)
       },c(y1=0,n1=0,y0=0,n0=0))%>%t()%>%data.frame()
     
+    
     p.dt = data.frame(y1=all.dat$y1,y0=all.dat$y0,
-                      n1=all.dat$n1,n0=all.dat$n0,n=ni)
+                      n1=all.dat$n1,n0=all.dat$n0,n=ni)%>%
+      mutate( cx = ( ( y1 == 0 ) | (y1 ==n1 ) | (y0 == 0 ) | (y0 == n0) )*0.5 ) %>%## selective process
+      mutate( y = log( ( y1 + cx )*( n0-y0 + cx )/( n1-y1 + cx )/( y0 + cx ) ), 
+                     v = 1/( y1 + cx ) + 1/( n0-y0 + cx ) + 
+                       1/( n1-y1 + cx ) + 1/( y0 + cx )) %>%
+      mutate( t = y/sqrt(v) ) %>% 
+      mutate(pvalue = pnorm(abs(t), lower.tail = FALSE))%>%
+      mutate(wi=ifelse(pvalue<cutoff[1], 1, ifelse(pvalue<cutoff[2], wi[1], wi[2])))
     
-    ## selective process
-   
-    
+    z=rbinom(nrow(p.dt),1, p.dt$wi)
     
     s.dt=p.dt[z>0,]
     
     res.list = list(
       p.dt=p.dt,
       s.dt=s.dt,
-      a=c(a1=a1,a0=a0),
-      Miss=c(M.e=M, M.o=sum(z==0)), 
-      p=c(p.e=mean(pz), p.o=mean(z>0))
+      Miss=c(M.o=sum(z==0)), 
+      p=c(p.e=mean(p.dt$wi), p.o=mean(z>0))
     )
     return(res.list)
     

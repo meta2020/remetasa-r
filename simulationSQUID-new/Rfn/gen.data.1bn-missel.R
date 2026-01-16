@@ -6,7 +6,9 @@ gendata.1bn.hedges = function(
     n_min, n_max,
     gr,
     theta,tau,rho,
-    Pnmax, Pnmin){
+    Pnmax, Pnmin,
+    cutoff=c(0.05,0.1), ## <0.05, <0.1, others
+    wi=c(0.5,0.3)){
   
   ni = runif( s, min = n_min, max = n_max )%>%round()
   ni = ifelse(ni<10,10,ni)
@@ -20,31 +22,23 @@ gendata.1bn.hedges = function(
   # generate yi
   yi = sapply(1:s, function(i) rbinom(1, ni[i], plogis(thetai[i])) )
   
-  p.dt = data.frame(y=yi,n=ni)
-  ## selective process
-  n_min=min(ni) 
-  n_max=max(ni)
+  p.dt = data.frame(y=yi,n=ni)%>%
+    mutate( cx = ( ( y == 0 ) | (y ==n ) )*0.5 ) %>%## selective process
+    mutate( prop = plogis( ( y + cx )/( n-y + cx )), 
+            v = 1/( y + cx ) + 1/( n-y + cx )) %>%
+    mutate( t = prop/sqrt(v) ) %>% 
+    mutate(pvalue = pnorm(abs(t), lower.tail = FALSE))%>%
+    mutate(wi=ifelse(pvalue<cutoff[1], 1, ifelse(pvalue<cutoff[2], wi[1], wi[2])))
   
-  a1=(qnorm(Pnmax)-qnorm(Pnmin))/(sqrt(n_max)-sqrt(n_min))
-  a0=qnorm(Pnmax)-a1*sqrt(n_max)
-  
-  zi=a0+a1*sqrt(ni)+deltai
-  z=1*(zi>0)
-  
-  pz=pnorm(a0+a1*sqrt(ni))
-  pz.s = pz[z>0]
-  M= sum((1-pz.s)/pz.s)%>%round()
-  p.dt$z=z
-  p.dt$pz=pz
+  z=rbinom(nrow(p.dt),1, p.dt$wi)
   
   s.dt=p.dt[z>0,]
   
   res.list = list(
     p.dt=p.dt,
     s.dt=s.dt,
-    a=c(a1=a1,a0=a0),
-    Miss=c(M.e=M, M.o=sum(z==0)), 
-    p=c(p.e=mean(pz), p.o=mean(z>0))
+    Miss=c(M.o=sum(z==0)), 
+    p=c(p.e=mean(p.dt$wi), p.o=mean(z>0))
   )
   return(res.list)
   

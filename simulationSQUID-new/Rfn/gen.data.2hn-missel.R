@@ -8,7 +8,9 @@ gendata.2hn.hedges = function(
     gr,
     theta,tau,rho,
     y_min,y_max,
-    Pnmax, Pnmin){
+    Pnmax, Pnmin,
+    cutoff=c(0.05,0.1), ## <0.05, <0.1, others
+    wi=c(0.5,0.3)){
   
   n = runif( s, min = n_min, max = n_max )
   n = ifelse(n<20,20,n)
@@ -31,32 +33,24 @@ gendata.2hn.hedges = function(
   y1i = sapply(1:s, function(i) BiasedUrn::rFNCHypergeo(nran=1, m1=n1i[i], m2=n0i[i], n=yi[i], odds=exp(thetai[i])))
   y0i = yi- y1i 
 
-  p.dt = data.frame(y1=y1i,y0=y0i,n1=n1i,n0=n0i,n=ni)
+  p.dt = data.frame(y1=y1i,y0=y0i,n1=n1i,n0=n0i,n=ni)%>%
+    mutate( cx = ( ( y1 == 0 ) | (y1 ==n1 ) | (y0 == 0 ) | (y0 == n0) )*0.5 ) %>%## selective process
+    mutate( y = log( ( y1 + cx )*( n0-y0 + cx )/( n1-y1 + cx )/( y0 + cx ) ), 
+            v = 1/( y1 + cx ) + 1/( n0-y0 + cx ) + 
+              1/( n1-y1 + cx ) + 1/( y0 + cx )) %>%
+    mutate( t = y/sqrt(v) ) %>% 
+    mutate(pvalue = pnorm(abs(t), lower.tail = FALSE))%>%
+    mutate(wi=ifelse(pvalue<cutoff[1], 1, ifelse(pvalue<cutoff[2], wi[1], wi[2])))
   
-  ## selective process
-  n_min=min(ni) 
-  n_max=max(ni)
-  
-  a1=(qnorm(Pnmax)-qnorm(Pnmin))/(sqrt(n_max)-sqrt(n_min))
-  a0=qnorm(Pnmax)-a1*sqrt(n_max)
-  
-  zi=a0+a1*sqrt(ni)+deltai
-  z=1*(zi>0)
-  
-  pz=pnorm(a0+a1*sqrt(ni))
-  pz.s = pz[z>0]
-  M= sum((1-pz.s)/pz.s)%>%round()
-  p.dt$z=z
-  p.dt$pz=pz
+  z=rbinom(nrow(p.dt),1, p.dt$wi)
   
   s.dt=p.dt[z>0,]
   
   res.list = list(
     p.dt=p.dt,
     s.dt=s.dt,
-    a=c(a1=a1,a0=a0),
-    Miss=c(M.e=M, M.o=sum(z==0)), 
-    p=c(p.e=mean(pz), p.o=mean(z>0))
+    Miss=c(M.o=sum(z==0)), 
+    p=c(p.e=mean(p.dt$wi), p.o=mean(z>0))
   )
   return(res.list)
   
