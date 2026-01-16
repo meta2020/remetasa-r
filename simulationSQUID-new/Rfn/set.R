@@ -6,7 +6,7 @@ library(doRNG)
 library(metafor)
 
 ## true parameters setting ----------
-s = c(15,50) ## #oiclif population studies
+s = c(15,50) ## #the number of population studies
 set = expand.grid(
   t.theta = c(-2), ## true theta
   t.tau = sqrt(c(0.1, 0.3, 0.7)), ## true tau  

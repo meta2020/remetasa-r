@@ -325,7 +325,7 @@ for(i in 1:nrow(set)){
     if(p==1){
       ## withou selection function
       
-      res = rbind(pnn,phn,pbn,
+      res.est = rbind(pnn,phn,pbn,
                   snn,shn,sbn,
                   pnn,pnn,
                   phn,pbn,

@@ -56,8 +56,8 @@ for(i in 1:nrow(set)){ #:nrow(set)
     lsdata = data[[2]]
     
     ## proportion of rare events
-    # p.small = lpdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
-    # s.small = lsdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
+    p.small = lpdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
+    s.small = lsdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
 
     ## population and selected models 
     
@@ -143,7 +143,7 @@ for(i in 1:nrow(set)){ #:nrow(set)
     p = nrow(sdata)/nrow(pdata)
     
     if(p==1){
-      ## withou selection function
+      ## without selection function
       fit.hn = lapply(
         list(lsdata),
         function(data) with(data, HN_GLMM(y0, y1, n0, n1, parset = parset.glmm)))
@@ -160,7 +160,7 @@ for(i in 1:nrow(set)){ #:nrow(set)
       # sbn = c(fit.bn[[2]]$mu, fit.bn[[2]]$tau, rep(NA,2),
       #          cv = ifelse(is.null(fit.bn[[2]]$opt$convergence), NA, fit.bn[[2]]$opt$convergence))
       
-      res = rbind(phn,pbn) ## if p=1, then all results are population
+      res.est = rbind(phn,pbn) ## if p=1, then all results are population
                   
       
     } else {
@@ -192,7 +192,7 @@ for(i in 1:nrow(set)){ #:nrow(set)
       #             cv = ifelse(is.null(adj.list[[3]]$opt$convergence), NA, adj.list[[3]]$opt$convergence))
       # adjbn   = c(adj.list[[4]]$mu, adj.list[[4]]$tau,adj.list[[4]]$rho,
       #             cv = ifelse(is.null(adj.list[[4]]$opt$convergence), NA, adj.list[[4]]$opt$convergence))
-      htjhn   = c(adj.list[[1]]$mu, adj.list[[1]]$tau, NA, NA,
+      htjhn   = c(adj.list[[1]]$mu, adj.list[[1]]$tau, rho=NA, rho.se=NA,
                   cv = ifelse(is.null(adj.list[[1]]$opt$convergence), NA, adj.list[[1]]$opt$convergence))
       htjbn   = c(adj.list[[2]]$mu, adj.list[[2]]$tau, NA, NA,
                   cv = ifelse(is.null(adj.list[[2]]$opt$convergence), NA, adj.list[[2]]$opt$convergence))
@@ -209,10 +209,10 @@ for(i in 1:nrow(set)){ #:nrow(set)
     
     
     res = cbind(res.est,
-                # p.prop=c(p.small, rep(NA,1)),
-                # s.prop=c(s.small, rep(NA,1)),
-                n.pub=c(nrow(sdata), rep(NA,1)),
-                p.pub=c(p, rep(NA,1)))
+                p.prop=c(p.small, NA),
+                s.prop=c(s.small, NA),
+                n.pub=c(nrow(sdata), NA),
+                p.pub=c(p, NA))
 
     res
 
@@ -253,8 +253,8 @@ for(i in 1:nrow(set)){ #:nrow(set)
       lpdata = data[[1]]
       lsdata = data[[2]]
       
-      # p.small = lpdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
-      # s.small = lsdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
+      p.small = lpdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
+      s.small = lsdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
       
       ## population and selected models 
       
@@ -357,7 +357,7 @@ for(i in 1:nrow(set)){ #:nrow(set)
       #         cv = ifelse(is.null(fit.bn[[2]]$opt$convergence), NA, fit.bn[[2]]$opt$convergence))      
       
       
-      res = rbind(#pnn,phn,pbn,
+      res.est = rbind(#pnn,phn,pbn,
                   #snn,shn,sbn,
                   #pnn,pnn,
                   #phn,pbn,
@@ -393,7 +393,7 @@ for(i in 1:nrow(set)){ #:nrow(set)
       #             cv = ifelse(is.null(adj.list[[3]]$opt$convergence), NA, adj.list[[3]]$opt$convergence))
       # adjbn   = c(adj.list[[4]]$mu, adj.list[[4]]$tau,adj.list[[4]]$rho,
       #             cv = ifelse(is.null(adj.list[[4]]$opt$convergence), NA, adj.list[[4]]$opt$convergence))
-      htjhn   = c(adj.list[[1]]$mu, adj.list[[1]]$tau, NA, NA,
+      htjhn   = c(adj.list[[1]]$mu, adj.list[[1]]$tau, rho=NA, rho.se=NA,
                   cv = ifelse(is.null(adj.list[[1]]$opt$convergence), NA, adj.list[[1]]$opt$convergence))
       htjbn   = c(adj.list[[2]]$mu, adj.list[[2]]$tau, NA, NA,
                   cv = ifelse(is.null(adj.list[[2]]$opt$convergence), NA, adj.list[[2]]$opt$convergence))
@@ -410,10 +410,10 @@ for(i in 1:nrow(set)){ #:nrow(set)
     
     
     res = cbind(res.est,
-                # p.prop=c(p.small, rep(NA,11)),
-                # s.prop=c(s.small, rep(NA,11)),
-                n.pub=c(nrow(sdata), rep(NA,1)),
-                p.pub=c(p, rep(NA,1)))
+                p.prop=c(p.small, NA),
+                s.prop=c(s.small, NA),
+                n.pub=c(nrow(sdata), NA),
+                p.pub=c(p, NA))
     res
       
     }

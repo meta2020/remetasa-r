@@ -18,17 +18,17 @@ HTJ_HNGLMM <- function(
 
     data.opt <- lapply(1:nrow(data.x), FUN = function(ind){
     data.frame( y1 = 0:data.x$yall[ind], yall = data.x$yall[ind], n1 = data.x$n1[ind], n0 = data.x$n0[ind]  ) %>%
-        dplyr::mutate( y0 = yall - y1 ) %>%
-        dplyr::mutate( cx = ( ( y1 == 0 ) | (y1 ==n1 ) | (y0 == 0 ) | (y0 == n0) )*0.5 ) %>%
-        dplyr::mutate( y = log( ( y1 + cx )*( n0-y0 + cx )/( n1-y1 + cx )/( y0 + cx ) ), 
+        mutate( y0 = yall - y1 ) %>%
+        mutate( cx = ( ( y1 == 0 ) | (y1 ==n1 ) | (y0 == 0 ) | (y0 == n0) )*0.5 ) %>%
+        mutate( y = log( ( y1 + cx )*( n0-y0 + cx )/( n1-y1 + cx )/( y0 + cx ) ), 
                        v = 1/( y1 + cx ) + 1/( n0-y0 + cx ) + 
                            1/( n1-y1 + cx ) + 1/( y0 + cx )) %>%
-        dplyr::mutate( tmp = y/sqrt(v) ) %>% dplyr::mutate(index = ind) %>%
-        dplyr::mutate( addict = log( choose(yall, y1) ) ) %>%
-        dplyr::mutate( addictx = log( choose(n1, y1) ) + log(choose(n0, y0)) )
+        mutate( tmp = y/sqrt(v) ) %>% mutate(index = ind) %>%
+        mutate( addict = log( choose(yall, y1) ) ) %>%
+        mutate( addictx = log( choose(n1, y1) ) + log(choose(n0, y0)) )
     })
     data.opt.vec <- do.call('rbind', data.opt)
-    veca = cumsum( data.x$yall + 1 ) + 1
+    # veca = cumsum( data.x$yall + 1 ) + 1
     index.x = lapply(1:nrow(data.x), FUN = function(ind){
         x1 = which(data.opt.vec[['index']] == ind)
         c(min(x1), max(x1))
@@ -125,7 +125,7 @@ HTJ_HNGLMM <- function(
     
         hes <- numDeriv::hessian( llk.o, x = optim.res$par )
         hes[is.nan(hes)] = sqrt(parset[["eps"]])
-        var.matrix = tryCatch(solve(hes), error=function(e) matrix(rep(NA,9),3,3))
+        var.matrix = tryCatch(solve(hes[1:2,1:2]), error=function(e) matrix(rep(NA,4),2,2))
         mu.se  = if (is.na(var.matrix[1, 1]) || var.matrix[1, 1] < 0) NA else sqrt(var.matrix[1,1])
         tau.se = if (is.na(var.matrix[2, 2]) || var.matrix[2, 2] < 0) NA else sqrt(var.matrix[2,2])
 

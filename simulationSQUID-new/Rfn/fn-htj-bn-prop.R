@@ -1,5 +1,5 @@
-HTJ_BNGLMM  <- function(
-    y0, y1, n0, n1, ## data with names n1 n0 y1 y0
+HTJ_BNGLMM_PROP  <- function(
+    y1, n1, ## data with names n1 n0 y1 y0
     p = 0.7, 
     parset = list(
       mu.bound = 10,
@@ -12,17 +12,14 @@ HTJ_BNGLMM  <- function(
       init.vals = c(-0.71, 0.28, 0.1))
     ){
 
-    data.x <- data.frame(y0=y0, y1=y1, n0=n0, n1=n1)
-    data.x$yall <- y1+y0
+    data.x <- data.frame(y1=y1, n1=n1)
     nstudy <- nrow(data.x)
 
     data.opt <- lapply(1:nrow(data.x), FUN = function(ind){
-    data.frame( y1 = 0:data.x$yall[ind], yall = data.x$yall[ind], n1 = data.x$n1[ind], n0 = data.x$n0[ind]  ) %>%
-        mutate( y0 = yall - y1 ) %>%
-        mutate( cx = ( ( y1 == 0 ) | (y1 ==n1 ) | (y0 == 0 ) | (y0 == n0) )*0.5 ) %>%
-        mutate( y = log( ( y1 + cx )*( n0-y0 + cx )/( n1-y1 + cx )/( y0 + cx ) ), 
-                       v = 1/( y1 + cx ) + 1/( n0-y0 + cx ) + 
-                           1/( n1-y1 + cx ) + 1/( y0 + cx )) %>%
+    data.frame( y1 = 0:data.x$yall[ind], n1 = data.x$n1[ind] ) %>%
+        mutate( cx = ( ( y1 == 0 ) | (y1 ==n1 ) )*0.5 ) %>%
+        mutate( y = log( ( y1 + cx )/( n1-y1 + cx )), 
+                v = 1/( y1 + cx ) + 1/( n1-y1 + cx )) %>%
         mutate( tmp = y/sqrt(v) ) %>% mutate(index = ind) #%>%
         # mutate( addict = log( choose(yall, y1) ) ) %>%
         # mutate( addictx = log( choose(n1, y1) ) + log(choose(n0, y0)) )
@@ -37,13 +34,13 @@ HTJ_BNGLMM  <- function(
     # yindex <- with( data.x, cumsum( c( y0 + y1 + 1 ) ) )
     # xindex <- with( data.x, y1 + 1 + c(0, yindex[1:(nstudy-1)]  )  )
 
-    yall <- data.x$yall
+    yall <- data.x$n1
     tmp <- data.x$tmp
 
     y1.all <- data.opt.vec$y1
-    yall.all <- data.opt.vec$yall
-    n1.all <- data.opt.vec$n1
-    n0.all <- data.opt.vec$n0
+    yall.all <- data.opt.vec$n1
+    # n1.all <- data.opt.vec$n1
+    # n0.all <- data.opt.vec$n0
     # y.all <- data.opt.vec$y
     # v.all <- data.opt.vec$v
     tmp.all <- data.opt.vec$tmp
@@ -59,7 +56,7 @@ HTJ_BNGLMM  <- function(
                 pox <- pnorm(alpha + beta*tmp.all)
                 prob.x <- cubature::hcubature( f = function(tvec){
                     
-                    p1 = 1/(1 + exp(-(log(n1.all/n0.all) + tau*tvec + mu)))
+                    p1 = 1/(1 + exp(-(tau*tvec + mu)))
                     vec = dbinom(y1.all, yall.all, p1)*pox
                     
                     sapply(1:nstudy, 
@@ -77,7 +74,7 @@ HTJ_BNGLMM  <- function(
                 extendInt = 'yes')$root
             
             prob.prior <- with(data.x, cubature::hcubature( f = function(tvec){
-                p1 <- 1/(1 + exp(-(log(n1/n0) + tau*tvec + mu)))
+                p1 <- 1/(1 + exp(-(tau*tvec + mu)))
                 dbinom( y1, yall, p1)*dnorm(tvec)
             }, 
             lowerLimit = -parset[["integ.limit"]], upperLimit = parset[["integ.limit"]], 
@@ -86,7 +83,7 @@ HTJ_BNGLMM  <- function(
             pox <- pnorm(alpha.opt + beta*tmp.all)
             prob.denom <- cubature::hcubature( f = function(tvec){
                 
-                p1 = 1/(1 + exp(-(log(n1.all/n0.all) + tau*tvec + mu)))
+                p1 = 1/(1 + exp(-(tau*tvec + mu)))
                 vec = dbinom(y1.all, yall.all, p1)*pox
                 
                 sapply(1:nstudy, 
