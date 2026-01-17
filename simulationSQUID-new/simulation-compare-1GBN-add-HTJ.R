@@ -147,7 +147,7 @@ for(i in c(1:3,7:9)){
         #                                    n_min = nmin, n_max = nmax,
         #                                    parset=parset.new)),
         function(x) with(x,
-                         HTJ_HNGLMM_prop(y, n, p, parset=parset.htj))
+                         HTJ_BNGLMM_prop(y, n, p, parset=parset.htj))
         
       )
       
@@ -166,11 +166,11 @@ for(i in c(1:3,7:9)){
 
       }
       
-      res = c(res.est,
+      res = unlist(c(res.est,
                   p.prop=p.small,
                   s.prop=s.small,
                   n.pub=nrow(sdata),
-                  p.pub=p)
+                  p.pub=p), use.names = TRUE)
       res
       
     }

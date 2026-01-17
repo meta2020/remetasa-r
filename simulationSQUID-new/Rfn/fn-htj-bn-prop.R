@@ -1,4 +1,4 @@
-HTJ_BNGLMM_PROP  <- function(
+HTJ_BNGLMM_prop  <- function(
     y1, n1, ## data with names n1 n0 y1 y0
     p = 0.7, 
     parset = list(
@@ -13,6 +13,7 @@ HTJ_BNGLMM_PROP  <- function(
     ){
 
     data.x <- data.frame(y1=y1, n1=n1)
+    data.x$yall <- n1
     nstudy <- nrow(data.x)
 
     data.opt <- lapply(1:nrow(data.x), FUN = function(ind){
