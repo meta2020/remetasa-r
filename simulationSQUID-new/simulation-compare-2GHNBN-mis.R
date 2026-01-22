@@ -1,6 +1,11 @@
 ##
 ## Compare all methods based on HN model data generating process (Add Hu et al.)
 ##
+sink("log-mis-2.txt")
+msg_file = file("log-mis-2.txt", open="at")
+sink(msg_file, type = "message")
+
+
 rm(list=ls())
 
 file.sources = list.files("Rfn/")
@@ -142,7 +147,7 @@ for(i in 1:nrow(set)){
     if(p==1){
       ## withou selection function
       
-      res = rbind(pnn,phn,pbn,
+      res.est = rbind(pnn,phn,pbn,
                   snn,shn,sbn,
                   pnn,pnn,
                   phn,pbn,
@@ -203,8 +208,8 @@ for(i in 1:nrow(set)){
     res
 
   }
-  save(DATA,file = paste0("res-2GHN/data-set-",i,"-S",S,".RData"))
-  message(paste0("Finish-2GHN-",S,"-",i,":",Sys.time()))
+  save(DATA,file = paste0("res-2GHN-mis/data-set-",i,"-S",S,".RData"))
+  message(paste0("Finish-2GHN-mis",S,"-",i,":",Sys.time()))
 
 
 ##-- Simulation 2: 2-group binomial model based -------
@@ -329,7 +334,7 @@ for(i in 1:nrow(set)){
     if(p==1){
       ## withou selection function
       
-      res = rbind(pnn,phn,pbn,
+      res.est = rbind(pnn,phn,pbn,
                   snn,shn,sbn,
                   pnn,pnn,
                   phn,pbn,
@@ -389,11 +394,14 @@ for(i in 1:nrow(set)){
     res
       
     }
-    save(DATA,file = paste0("res-2GBN/data-set-",i,"-S",S,".RData"))
-    message(paste0("Finish-2GBN-",S,"-",i,":",Sys.time()))
+    save(DATA,file = paste0("res-2GBN-mis/data-set-",i,"-S",S,".RData"))
+    message(paste0("Finish-2GBN-mis-",S,"-",i,":",Sys.time()))
 }}
 
 
 parallel::stopCluster(cl)
 message(paste0("Finish",Sys.time()))
 
+sink(type = "message")
+# close(msg_file)
+sink()
