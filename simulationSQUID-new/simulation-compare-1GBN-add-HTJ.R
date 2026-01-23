@@ -1,6 +1,10 @@
 ##
 ## Compare all methods based on HN model data generating process
 ##
+sink("log-add-1.txt")
+msg_file = file("log-add-1.txt", open="at")
+sink(msg_file, type = "message")
+
 rm(list=ls())
 
 file.sources = list.files("Rfn/")
@@ -40,7 +44,7 @@ for(i in c(1:3,7:9)){
       sdata = plist$s.dt
       pdata = plist$p.dt
       
-      ## data with n and lnOR
+      ## data with n and log odds
       data = lapply(list(pdata, sdata),
                     function(data) escalc(measure="PLO", xi=y, ni=n, data=data)
       )
@@ -181,4 +185,6 @@ for(i in c(1:3,7:9)){
 
 parallel::stopCluster(cl)
 message(paste0("Finish",Sys.time()))
-
+sink(type = "message")
+# close(msg_file)
+sink()

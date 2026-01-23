@@ -332,8 +332,7 @@ for(i in 1:nrow(set)){
       p = nrow(sdata)/nrow(pdata)
     
     if(p==1){
-      ## withou selection function
-      
+
       res.est = rbind(pnn,phn,pbn,
                   snn,shn,sbn,
                   pnn,pnn,

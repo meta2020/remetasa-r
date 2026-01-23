@@ -4,7 +4,6 @@
 gendata.1bn.hedges = function(
     s, 
     n_min, n_max,
-    gr,
     theta,tau,rho,
     Pnmax, Pnmin,
     cutoff=c(0.05,0.1), ## <0.05, <0.1, others

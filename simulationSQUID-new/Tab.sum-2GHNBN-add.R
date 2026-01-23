@@ -18,7 +18,7 @@ cv.sum=NULL
 nset=nrow(set)
 for(i in 1:nset){
 
-  load(paste0("res-2GHN-add/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GBN-add/data-set-",i,"-S",S,".RData"))
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(12,2, rtimes),
           dimnames = list( colnames(DATA),rownames(DATA)[1:2],c(1:rtimes)))
@@ -31,7 +31,7 @@ for(i in 1:nset){
   mu    = do.call(rbind, lapply(1:rtimes, function(i) DATA0[1,,i]))
   mu.se = do.call(rbind, lapply(1:rtimes, function(i) DATA0[2,,i]))
   tau   = do.call(rbind, lapply(1:rtimes, function(i) DATA0[5,,i]))
-  N   = do.call(rbind, lapply(1:rtimes, function(i) DATA0[11,,i]))
+  N   = do.call(rbind, lapply(1:rtimes, function(i) DATA0[12,,i]))
   CV    = do.call(rbind, lapply(1:rtimes, function(i) DATA0[8,,i]))
   
   CI.lb = mu-1.96*mu.se
