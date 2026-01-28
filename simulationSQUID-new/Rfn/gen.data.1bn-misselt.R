@@ -1,13 +1,13 @@
 ## Generate meta-analysis according to the BN-GLMM
 ## N are sampled from uniform distributions
 
-gendata.1bn.hedges = function(
+gendata.1bn.t = function(
     s, 
     n_min, n_max,
     theta,tau,rho,
     Pnmax, Pnmin,
-    cutoff=c(0.01,0.05,0.1), ## <0.05, <0.1, others
-    wi=c(1,0.9,0.5,0.3)){
+    alpha =-3,
+    beta = 2){
   
   ni = runif( s, min = n_min, max = n_max )%>%round()
   ni = ifelse(ni<10,10,ni)
@@ -25,13 +25,10 @@ gendata.1bn.hedges = function(
   
   p.dt2 = escalc(measure="PLO", xi=y, ni=n, data=p.dt) %>% 
     mutate(ti=yi/sqrt(vi)) %>%
-    mutate(pvalue = 2*pnorm(abs(ti), lower.tail = FALSE)) %>%
-    mutate(wi=ifelse(pvalue<cutoff[1], wi[1], ifelse(pvalue<cutoff[2], wi[2], ifelse(pvalue<cutoff[3], wi[3], wi[4]))))
+    mutate(wi = pnorm(alpha+beta*ti))
   
-  p.dt$pvalue=p.dt2$pvalue
   z=rbinom(nrow(p.dt),1, p.dt2$wi)
   s.dt=p.dt[z>0,]
-  
   
   res.list = list(
     p.dt=p.dt,

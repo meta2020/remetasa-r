@@ -2,14 +2,14 @@
 ##
 ## From Ao
 ##
-gendata.2bn.hedges = function(
+gendata.2bn.t = function(
     s, 
     n_min, n_max, p0,
     gr,
     theta,tau,rho,
     Pnmax, Pnmin,
-    cutoff=c(0.01,0.05,0.1), ## <0.05, <0.1, others
-    wi=c(1,1,0.5,0.3)){     ## 1,0.5,0.3
+    alpha = -3,
+    beta = 2){     ## 1,0.5,0.3
   
     n = runif( s, min = n_min, max = n_max )
     n = ifelse(n<20,20,n)
@@ -41,15 +41,13 @@ gendata.2bn.hedges = function(
     
     p.dt = data.frame(y1=all.dat$y1,y0=all.dat$y0,
                       n1=all.dat$n1,n0=all.dat$n0,n=ni)
-    
+
     p.dt2 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, data = p.dt) %>% 
       mutate(ti=yi/sqrt(vi)) %>%
-      mutate(pvalue = 2*pnorm(abs(ti), lower.tail = FALSE)) %>%
-      mutate(wi=ifelse(pvalue<cutoff[1], wi[1], ifelse(pvalue<cutoff[2], wi[2], ifelse(pvalue<cutoff[3], wi[3], wi[4]))))
-    
+      mutate(wi = pnorm(alpha+beta*ti))
+
     z=rbinom(nrow(p.dt),1, p.dt2$wi)
     s.dt=p.dt[z>0,]
-    p.dt$pvalue=p.dt2$pvalue
     
     res.list = list(
       p.dt=p.dt,

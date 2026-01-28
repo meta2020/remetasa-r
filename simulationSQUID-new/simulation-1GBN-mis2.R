@@ -6,11 +6,11 @@ sink(log.name)
 msg_file = file(log.name, open="at")
 sink(msg_file, type = "message")
 
-
 rm(list=ls())
 
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
+load("scenarios/set.RData")
 
 rtimes=1000
 
