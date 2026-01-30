@@ -3,13 +3,13 @@ library(kableExtra)
 
 ## --------------------------------
 
-source("Rfn/set.R")
+load("scenarios/set.RData")
 
 ## create a summary table
 
 sum.tab2 = function(S){
   
-rtimes=1000
+
 t.mu=set$t.theta[1]
 CP.sum=NULL
 theta.sum=NULL
@@ -19,11 +19,12 @@ cv.sum=NULL
 nset=6
 
 for(i in c(1:3,7:9)){
-  # i=2
-  load(paste0("res-1GBN/data-set-",i,"-S",S,".RData"))
+  
+  load(paste0("res-1GBN-mis1/data-set-",i,"-S",S,".RData"))
+  rtimes = dim(DATA)[1]/8
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
-    array(., dim = c(11, 7, rtimes),
-          dimnames = list(colnames(DATA),rownames(DATA)[1:7],c(1:rtimes)))
+    array(., dim = c(12, 8, rtimes),
+          dimnames = list(colnames(DATA),rownames(DATA)[1:8],c(1:rtimes)))
   
   ## remove nonconverged values
   for(j in 1:rtimes){
@@ -100,7 +101,7 @@ tDF = cbind.data.frame(S=c(S, rep("",5)),
 
 rownames(DF.cv)=NULL
 
-DF.list = list(DF, DF.cv, tDF)
+DF.list = list(DF[,c(1:10,12,11)], DF.cv[,c(1:10,12,11)], tDF[,c(1:10,12,11)])
 
 return(DF.list)
 }
@@ -111,14 +112,15 @@ DF.cv.all=rbind.data.frame(sum.tab2(15)[[2]], sum.tab2(50)[[2]])
 tDF.all=rbind.data.frame(sum.tab2(15)[[3]], sum.tab2(50)[[3]])
 
 
-tDF.all%>%kbl(., 
-         format = "latex",
+DF.all%>%kbl(., 
+         format = "html",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","$\\tau^2$","$N$",
                        "NN$_P$", "1SBN$_P$", 
                        "NN$_O$", "1SBN$_O$", 
                        "CN (CP)", "CS (CP)", 
+                       "1SBN$^{\\text{Hu}}$ (CP)",
                        "1SBN$^{\\text{prop}}$ (CP)"),
          align = "r",
          linesep = c('', '','\\addlinespace'),

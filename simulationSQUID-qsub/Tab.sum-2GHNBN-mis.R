@@ -1,7 +1,7 @@
 library(dplyr)
 library(kableExtra)
 
-source("Rfn/set.R")
+load("scenarios/set.RData")
 
 ## create a summary table
 
@@ -17,7 +17,7 @@ cv.sum=NULL
 
 nset=nrow(set)
 for(i in 1:nset){
-  load(paste0("res-2GHN-mis/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GHN-new/data-set-",i,"-S",S,".RData"))
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(12, 12, rtimes),
           dimnames = list(colnames(DATA),rownames(DATA)[1:12],c(1:rtimes)))
@@ -106,7 +106,7 @@ tDF.all=rbind.data.frame(sum.tab(15)[[3]], sum.tab(50)[[3]])
 
 
 DF.all%>%kbl(., 
-         format = "latex",
+         format = "html",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","T:C","$\\tau^2$","$N$",
