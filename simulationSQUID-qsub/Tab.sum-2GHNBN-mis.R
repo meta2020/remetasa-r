@@ -7,7 +7,7 @@ load("scenarios/set.RData")
 
 sum.tab = function(S){
   
-rtimes=1000  
+# rtimes=1000  
 t.mu=set$t.theta[1]
 CP.sum=NULL
 theta.sum=NULL
@@ -17,7 +17,8 @@ cv.sum=NULL
 
 nset=nrow(set)
 for(i in 1:nset){
-  load(paste0("res-2GHN-mis1/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GBN-new/data-set-",i,"-S",S,".RData"))
+  rtimes = (dim(DATA)/12)[1]
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(12, 12, rtimes),
           dimnames = list(colnames(DATA),rownames(DATA)[1:12],c(1:rtimes)))

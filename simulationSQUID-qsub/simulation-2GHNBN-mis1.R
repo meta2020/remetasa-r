@@ -43,7 +43,7 @@ for(i in 1:nrow(set)){
       y_min=set.gr$ymin,y_max=set.gr$ymax,
       Pnmax = pmax, Pnmin = pmin,
       cutoff=c(0.01,0.05,0.1), ## <0.05, <0.1, others
-      wi=c(1,1, 0.5,0.3)) ## weight=1,0.5,0.3
+      wi=c(1,1, 0.4,0.2)) ## weight=1,0.5,0.3
 
     
     ## selected data and population data
@@ -205,7 +205,7 @@ for(i in 1:nrow(set)){
 ##-- Simulation 2: 2-group binomial model based -------
 
 
-    DATA = foreach(r=1:rtimes, .combine = rbind,.packages=c("mnormt","dplyr","metafor"))  %dorng%  {
+    DATA = foreach(r=1:rtimes, .combine = rbind,.packages=c("mnormt","dplyr","metafor"), .errorhandling = "remove")  %dorng%  {
       
       set.gr = set[i,]
       pmax = set.gr$pmax
