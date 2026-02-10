@@ -1,13 +1,13 @@
 library(dplyr)
 library(kableExtra)
 
-source("Rfn/set.R")
+load("scenarios/set.RData")
 
 ## create a summary table
 
 sum.tab = function(S){
   
-rtimes=1000  
+# rtimes=1000  
 t.mu=set$t.theta[1]
 CP.sum=NULL
 theta.sum=NULL
@@ -17,10 +17,11 @@ cv.sum=NULL
 
 nset=nrow(set)
 for(i in 1:nset){
-  load(paste0("res-2GBN/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GHN-new/data-set-",i,"-S",S,".RData"))
+  rtimes = (dim(DATA)/12)[1]
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
-    array(., dim = c(11, 10, rtimes),
-          dimnames = list(colnames(DATA),rownames(DATA)[1:10],c(1:rtimes)))
+    array(., dim = c(12, 12, rtimes),
+          dimnames = list(colnames(DATA),rownames(DATA)[1:12],c(1:rtimes)))
   
   ## remove nonconverged values
   for(j in 1:rtimes){
@@ -52,6 +53,7 @@ BIAS=theta.sum[,(4:6)]-t.mu
 BIAS.sp=sprintf("%.1f", BIAS*100)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(BIAS.sp)=colnames(BIAS)
 
+
 SA=theta.sum[,-(1:6)]-t.mu
 SA.CP=100*CP.sum[,-(1:6)]
 SA.sp=sprintf("%.1f (%.1f)", SA*100, SA.CP)%>%matrix(,nrow=nset)%>%as.data.frame()
@@ -80,6 +82,7 @@ tBIAS=tau.sum[,(4:6)]
 tBIAS.sp=sprintf("%.2f", tBIAS)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(tBIAS.sp)=colnames(tBIAS)
 
+
 tSA=tau.sum[,-(1:6)]
 tSA.sp=sprintf("%.2f", tSA)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(tSA.sp)=colnames(tSA)
@@ -104,14 +107,15 @@ tDF.all=rbind.data.frame(sum.tab(15)[[3]], sum.tab(50)[[3]])
 
 
 tDF.all%>%kbl(., 
-         format = "latex",
+         format = "html",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","T:C","$\\tau^2$","$N$",
                        "NN$_P$", "HN$_P$", "CBN$_P$", 
                        "NN$_O$", "HN$_O$", "CBN$_O$", 
                        "CN (CP)", "CS (CP)", 
-                       "HN$^\\text{Prop}$ (CP)","CBN$^\\text{Prop}$ (CP)"),
+                       "HN$^\\text{Prop}$ (CP)","CBN$^\\text{Prop}$ (CP)",
+                       "HN$^\\text{HTJ}$ (CP)","CBN$^\\text{HTJ}$ (CP)"),
          align = "r",
          linesep = c('', '','\\addlinespace'),
          escape = FALSE,

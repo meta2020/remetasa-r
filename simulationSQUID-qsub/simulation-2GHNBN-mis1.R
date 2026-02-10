@@ -1,7 +1,7 @@
 ##
 ## Compare all methods based on HN model data generating process (Add Hu et al.)
 ##
-log.name = "log-mis1-2G.txt"
+log.name = paste0("log-mis1-2G",as.numeric(Sys.time()),".txt")
 sink(log.name)
 msg_file = file(log.name, open="at")
 sink(msg_file, type = "message")
@@ -9,13 +9,28 @@ sink(msg_file, type = "message")
 
 rm(list=ls())
 
+## load functions and settings
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
+
+## load scenarios
 load("scenarios/set.RData")
 
+
+## settings for simulations
 rtimes=1000
 
-## SIMULATION 
+set.eps = 1e-4
+set.int.lmt = 10
+set.cub.tol = 1e-4
+
+set.cutoff=c(0.01,0.05,0.1)
+set.wi=c(1,1, 0.5, 0.4)
+
+set.tau.bound = 2
+set.mu.bound = abs(-2)*2
+
+## SIMULATION  ----------------------------------
 ncores = min(120, parallel::detectCores())
 cl = parallel::makeCluster(ncores, "SOCK")
 doSNOW::registerDoSNOW(cl)
@@ -40,10 +55,10 @@ for(i in 1:nrow(set)){
       theta=set.gr$t.theta,
       tau=set.gr$t.tau,
       rho=set.gr$t.rho,
-      y_min=set.gr$ymin,y_max=set.gr$ymax,
+      y_min=set.gr$ymin, y_max=set.gr$ymax,
       Pnmax = pmax, Pnmin = pmin,
-      cutoff=c(0.01,0.05,0.1), ## <0.05, <0.1, others
-      wi=c(1,1, 0.4,0.2)) ## weight=1,0.5,0.3
+      cutoff=set.cutoff, ## <0.05, <0.1, others
+      wi=set.wi) ## weight=1,0.5,0.3
 
     
     ## selected data and population data
@@ -65,10 +80,11 @@ for(i in 1:nrow(set)){
     
     ## set parset list
     parset.nn = list(
-      mu.bound = abs(set.gr$t.theta)*2, 
-      tau.bound = 1,
-      eps = 1e-4,
-      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
+      mu.bound = set.mu.bound, 
+      tau.bound = set.tau.bound,
+      eps = set.eps,
+      init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                    set.gr$t.tau  +round(runif(1,-0.3,0.3),2))
     )
     
     ## estimation without/with PB: NN, HN-GLMM, BN-GLMM on pdata and sdata
@@ -83,13 +99,14 @@ for(i in 1:nrow(set)){
     
     ## initial values for GLMM
     parset.glmm = list(
-      mu.bound = abs(set.gr$t.theta)*2,
-      tau.bound = 1,
-      eps = 1e-4,
-      integ.limit = 5, 
-      cub.tol = 1e-3,
-      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
-    )
+      mu.bound = set.mu.bound,
+      tau.bound = set.tau.bound,
+      eps = set.eps,
+      integ.limit = set.int.lmt, 
+      cub.tol = set.cub.tol,
+      init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                    set.gr$t.tau  +round(runif(1,-0.3,0.3),2))
+      )
     
     fit.hn = lapply(
       list(lpdata, lsdata), 
@@ -111,33 +128,39 @@ for(i in 1:nrow(set)){
     ## adjusted models 
     ## Copas methods initial values
     parset.copas = list(
-    mu.bound = abs(set.gr$t.theta)*2,
-    tau.bound = 1,
+    mu.bound = set.mu.bound,
+    tau.bound = set.tau.bound,
     estimate.rho = TRUE, 
-    eps = 1e-4,
-    init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+    eps = set.eps,
+    init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                  set.gr$t.tau  +round(runif(1,-0.3,0.3),2), 
+                  set.gr$t.rho  +round(runif(1,-0.3,0.1),2)) ## initials for mu tau and rho
     )
     ## proposed method initial values
     parset.new = list(
-      mu.bound = abs(set.gr$t.theta)*2,
-      tau.bound = 1,
+      mu.bound = set.mu.bound,
+      tau.bound = set.tau.bound,
       estimate.rho = TRUE, 
-      eps = 1e-4,
-      integ.limit = 5, 
-      cub.tol = 1e-3,
-      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+      eps = set.eps,
+      integ.limit = set.int.lmt, 
+      cub.tol = set.cub.tol,
+      init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                    set.gr$t.tau  +round(runif(1,-0.3,0.3),2), 
+                    set.gr$t.rho  +round(runif(1,-0.3,0.1),2)) ## initials for mu tau and rho
     )
     
     ## HTJ method initial values
     parset.htj = list(
-      mu.bound = abs(set.gr$t.theta)*2,
-      tau.bound = 5,
-      beta.bound = 10,
+      mu.bound = set.mu.bound,
+      tau.bound = set.tau.bound,
+      beta.bound = 5,
       alpha.bound = 10,
-      eps = 1e-4,
-      integ.limit = 5, 
-      cub.tol = 1e-3,
-      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),-runif(1,0.1,0.2)) ## initial value for mu tau and beta
+      eps = set.eps,
+      integ.limit = set.int.lmt, 
+      cub.tol = set.cub.tol,
+      init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                    set.gr$t.tau  +round(runif(1,-0.3,0.3),2), 
+                    round(runif(1,0.5,1),2)) ## initial value for mu tau and beta
     )
     
     nmin = min(lsdata$n)
@@ -187,8 +210,6 @@ for(i in 1:nrow(set)){
       
     }
     
-    
-    
     res = cbind(res.est,
                 p.prop=c(p.small, rep(NA,11)),
                 s.prop=c(s.small, rep(NA,11)),
@@ -221,8 +242,8 @@ for(i in 1:nrow(set)){
         tau=set.gr$t.tau,
         rho=set.gr$t.rho,
         Pnmax = pmax, Pnmin = pmin,
-        cutoff=c(0.01,0.05,0.1), ## <0.05, <0.1, others
-        wi=c(1,1, 0.5,0.3)) ## weight=1,0.5,0.3)
+        cutoff=set.cutoff, ## <0.05, <0.1, others
+        wi=set.wi) ## weight=1,0.5,0.3)
       
       
       ## selected data and population data
@@ -243,11 +264,12 @@ for(i in 1:nrow(set)){
       
       ## set parset list
       parset.nn = list(
-        mu.bound = abs(set.gr$t.theta)*2, 
-        tau.bound = 1,
-        eps = 1e-4,
-        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
-      )
+        mu.bound = set.mu.bound, 
+        tau.bound = set.tau.bound,
+        eps = set.eps,
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                      set.gr$t.tau  +round(runif(1,-0.3,0.3),2))
+        )
       
       ## estimation without/with PB: NN, HN-GLMM, BN-GLMM on pdata and sdata
       fit.nn = lapply(
@@ -261,13 +283,14 @@ for(i in 1:nrow(set)){
       
       ## initial values for GLMM
       parset.glmm = list(
-        mu.bound = abs(set.gr$t.theta)*2,
-        tau.bound = 1,
-        eps = 1e-4,
-        integ.limit = 5, 
-        cub.tol = 1e-3,
-        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
-      )
+        mu.bound = set.mu.bound,
+        tau.bound = set.tau.bound,
+        eps = set.eps,
+        integ.limit = set.int.lmt, 
+        cub.tol = set.cub.tol,
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                      set.gr$t.tau  +round(runif(1,-0.3,0.3),2))
+        )
       
       fit.hn = lapply(
         list(lpdata, lsdata), 
@@ -289,32 +312,38 @@ for(i in 1:nrow(set)){
       ## adjusted models 
       ## Copas methods initial values
       parset.copas = list(
-        mu.bound = abs(set.gr$t.theta)*2,
-        tau.bound = 1,
+        mu.bound = set.mu.bound,
+        tau.bound = set.tau.bound,
         estimate.rho = TRUE, 
-        eps = 1e-4,
-        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),rho=set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+        eps = set.eps,
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                      set.gr$t.tau  +round(runif(1,-0.3,0.3),2), 
+                      set.gr$t.rho  +round(runif(1,-0.3,0.1),2)) ## initials for mu tau and rho
       )
       ## proposed method initial values
       parset.new = list(
-        mu.bound = abs(set.gr$t.theta)*1.5,
-        tau.bound = 1,
+        mu.bound = set.mu.bound,
+        tau.bound = set.tau.bound,
         estimate.rho = TRUE, 
-        eps = 1e-4,
-        integ.limit = 5, 
-        cub.tol = 1e-3,
-        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),rho=set.gr$t.rho+runif(1,-0.1,0.1))
+        eps = set.eps,
+        integ.limit = set.int.lmt, 
+        cub.tol = set.cub.tol,
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                      set.gr$t.tau  +round(runif(1,-0.3,0.3),2), 
+                      set.gr$t.rho  +round(runif(1,-0.3,0.1),2))
       )
       
       parset.htj = list(
-        mu.bound = abs(set.gr$t.theta)*2,
-        tau.bound = 5,
+        mu.bound = set.mu.bound,
+        tau.bound = set.tau.bound,
         beta.bound = 10,
         alpha.bound = 10,
-        eps = 1e-4,
-        integ.limit = 5, 
-        cub.tol = 1e-3,
-        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),-runif(1,0.1,0.2)) ## initial value for mu tau and beta
+        eps = set.eps,
+        integ.limit = set.int.lmt, 
+        cub.tol = set.cub.tol,
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.5,0.5),2),
+                      set.gr$t.tau  +round(runif(1,-0.3,0.3),2),  
+                      round(runif(1,0.5,1),2)) ## initial value for mu tau and beta
       )
       
       nmin = min(lsdata$n)

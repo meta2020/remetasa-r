@@ -1,13 +1,13 @@
 library(dplyr)
 library(kableExtra)
 
-source("Rfn/set.R")
+load("scenarios/set.RData")
 
 ## create a summary table
 
 sum.tab = function(S){
-
-rtimes=1000  
+  
+# rtimes=1000  
 t.mu=set$t.theta[1]
 CP.sum=NULL
 theta.sum=NULL
@@ -17,21 +17,21 @@ cv.sum=NULL
 
 nset=nrow(set)
 for(i in 1:nset){
-
-  load(paste0("res-2GBN-add/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GHN-new/data-set-",i,"-S",S,".RData"))
+  rtimes = (dim(DATA)/12)[1]
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
-    array(., dim = c(12,2, rtimes),
-          dimnames = list( colnames(DATA),rownames(DATA)[1:2],c(1:rtimes)))
+    array(., dim = c(12, 12, rtimes),
+          dimnames = list(colnames(DATA),rownames(DATA)[1:12],c(1:rtimes)))
   
   ## remove nonconverged values
   for(j in 1:rtimes){
-    DATA0[1:2,,j][,(DATA0[,,j][8,]!=0)]=NA
+    DATA0[1:7,,j][,(DATA0[,,j][8,]!=0)]=NA
   }
   
   mu    = do.call(rbind, lapply(1:rtimes, function(i) DATA0[1,,i]))
   mu.se = do.call(rbind, lapply(1:rtimes, function(i) DATA0[2,,i]))
   tau   = do.call(rbind, lapply(1:rtimes, function(i) DATA0[5,,i]))
-  N   = do.call(rbind, lapply(1:rtimes, function(i) DATA0[12,,i]))
+  N   = do.call(rbind, lapply(1:rtimes, function(i) DATA0[11,,i]))
   CV    = do.call(rbind, lapply(1:rtimes, function(i) DATA0[8,,i]))
   
   CI.lb = mu-1.96*mu.se
@@ -44,10 +44,20 @@ for(i in 1:nset){
   n.sum     = rbind(n.sum, colMeans(N, na.rm = T))
   cv.sum    = rbind(cv.sum, colMeans(CV, na.rm = T))
 }
-## HTJ method
-PM=theta.sum[,1:2]-t.mu
+## 1:1 set with biased and adjusted
+PM=theta.sum[,1:3]-t.mu
 PM.sp=sprintf("%.1f", PM*100)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(PM.sp)=colnames(PM)
+
+BIAS=theta.sum[,(4:6)]-t.mu
+BIAS.sp=sprintf("%.1f", BIAS*100)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(BIAS.sp)=colnames(BIAS)
+
+
+SA=theta.sum[,-(1:6)]-t.mu
+SA.CP=100*CP.sum[,-(1:6)]
+SA.sp=sprintf("%.1f (%.1f)", SA*100, SA.CP)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(SA.sp)=colnames(SA)
 
 
 pt=sprintf("U[%d, %d]",set$nmin,set$nmax)
@@ -55,26 +65,32 @@ pt[-seq(1,18,6)]=""
 grp=sprintf("%d:1",set$grp)
 grp[-seq(1,18,3)]=""
 
-## theta
 DF = cbind.data.frame(S=c(S, rep("",17)),
                       pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1),
-                      HTJ=PM.sp)
+                      POP=PM.sp,PB=BIAS.sp,SA=SA.sp)
 
-## CV
 DF.cv = cbind.data.frame(S=c(S, rep("",17)),
                          pt, grp, tau2=(set$t.tau)^2, N=round(n.sum[,1],1), 
                          100-cv.sum*100)
 rownames(DF.cv)=NULL
 
-## tau
-tPM=tau.sum[,1:2]
+tPM=tau.sum[,1:3]
 tPM.sp=sprintf("%.2f", tPM)%>%matrix(,nrow=nset)%>%as.data.frame()
 colnames(tPM.sp)=colnames(tPM)
+
+tBIAS=tau.sum[,(4:6)]
+tBIAS.sp=sprintf("%.2f", tBIAS)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(tBIAS.sp)=colnames(tBIAS)
+
+
+tSA=tau.sum[,-(1:6)]
+tSA.sp=sprintf("%.2f", tSA)%>%matrix(,nrow=nset)%>%as.data.frame()
+colnames(tSA.sp)=colnames(tSA)
 
 
 tDF = cbind.data.frame(S=c(S, rep("",17)),
                       pt, grp, tau2=(set$t.tau)^2,N=round(n.sum[,1],1), 
-                      HTJ=tPM.sp)
+                      POP=tPM.sp,PB=tBIAS.sp,SA=tSA.sp)
 
 DF.list = list(DF, DF.cv, tDF)
 
@@ -90,11 +106,15 @@ tDF.all=rbind.data.frame(sum.tab(15)[[3]], sum.tab(50)[[3]])
 
 
 
-DF.all%>%kbl(., 
+tDF.all%>%kbl(., 
          format = "html",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","T:C","$\\tau^2$","$N$",
+                       "NN$_P$", "HN$_P$", "CBN$_P$", 
+                       "NN$_O$", "HN$_O$", "CBN$_O$", 
+                       "CN (CP)", "CS (CP)", 
+                       "HN$^\\text{Prop}$ (CP)","CBN$^\\text{Prop}$ (CP)",
                        "HN$^\\text{HTJ}$ (CP)","CBN$^\\text{HTJ}$ (CP)"),
          align = "r",
          linesep = c('', '','\\addlinespace'),
