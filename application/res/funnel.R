@@ -93,7 +93,7 @@ vi2 = yvi2[,2]
 par(mfrow=c(1,2))
 
 res1 = rma(yi, vi, data=yvi1)
-funnel(trimfill(res1,estimator="L0"),yaxis="sqrtni")
+funnel(trimfill(res1,estimator="L0"))
 abline(v=res1$beta)
 reg1 = regtest(res1, model="lm")
 rnk1 = ranktest(res1)
@@ -102,7 +102,7 @@ mtext(sprintf("Regression test: t = %.3f, p = %.3f", reg1$zval, reg1$pval),side 
 mtext(sprintf("Rank test: t = %.3f, p = %.3f", rnk1$tau, rnk1$pval),side = 3, adj = 0)
 
 res2 = rma(yi, vi, data=yvi2)
-funnel(trimfill(res2,estimator="L0"),yaxis="seinv")
+funnel(trimfill(res2,estimator="L0"))
 abline(v=res2$beta)
 reg2 = regtest(res2, model="lm")
 rnk2 = ranktest(res2)

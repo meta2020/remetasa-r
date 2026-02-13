@@ -1,0 +1,192 @@
+##
+## Compare all methods based on HN model data generating process (Add Hu et al.)
+##
+log.name = paste0("log-mis1-1GBN",as.numeric(Sys.time()),".txt")
+sink(log.name)
+msg_file = file(log.name, open="at")
+sink(msg_file, type = "message")
+
+
+rm(list=ls())
+
+file.sources = list.files("Rfn/")
+sapply(paste0("Rfn/", file.sources), source)
+load("scenarios/set.RData")
+
+rtimes=1000
+set.cutoff=c(0.001,0.005,0.01,0.05) ## <0.05, <0.1, others
+set.wi=c(0.99,0.8, 0.6, 0.5,0.3,0.3)
+
+## SIMULATION 
+ncores = min(120, parallel::detectCores())
+cl = parallel::makeCluster(ncores, "SOCK")
+doSNOW::registerDoSNOW(cl)
+
+message(paste0("Start",Sys.time()))
+
+##-- Simulation 1: HN model based -------
+set.seed(2025)
+for(S in s){
+for(i in c(1:3,7:9)){ 
+  DATA = foreach(r=1:rtimes, .combine = rbind, .packages=c("mnormt","dplyr","metafor"), .errorhandling = "remove")  %dorng%  {
+
+    set.gr = set[i,]
+    # pmax = set.gr$pmax
+    # pmin = set.gr$pmin
+    
+    ## create datasets
+    ## create datasets
+      plist = gendata.1bn.hedges(
+        s=S, 
+        n_min = round(set.gr$nmin/2), n_max=round(set.gr$nmax/2),
+        theta=set.gr$t.theta,
+        tau=set.gr$t.tau,
+        rho=set.gr$t.rho,
+        Pnmax = pmax, Pnmin = pmin,
+        cutoff=set.cutoff, ## <0.05, <0.1, others
+        wi=set.wi)
+      
+      
+      ## selected data and population data
+      sdata = plist$s.dt
+      pdata = plist$p.dt
+
+    ## data with n and log odds
+      data = lapply(list(pdata, sdata),
+                    function(data) escalc(measure="PLO", xi=y, ni=n, data=data)
+      )
+      lpdata = data[[1]]
+      lsdata = data[[2]]
+      
+      p.small = lpdata %>%summarise(prop = mean(y <=5))%>%c()
+      s.small = lsdata %>%summarise(prop = mean(y <=5))%>%c()
+      
+      ## population and selected models 
+      
+      ## set parset list
+      parset.nn = list(
+        mu.bound = abs(set.gr$t.theta)*2, 
+        tau.bound = 1,
+        eps = 1e-4,
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
+      )
+      
+      ## estimation without/with PB: NN, HN-GLMM, BN-GLMM on pdata and sdata
+      fit.nn = lapply(
+        list(lpdata,lsdata), 
+        function(data) with(data, NN_LMM(yi, vi, parset=parset.nn)))
+      
+      pnn = c(fit.nn[[1]]$mu, fit.nn[[1]]$tau, rho=NA, rho.se=NA,
+              cv = ifelse(is.null(fit.nn[[1]]$opt$convergence), NA, fit.nn[[1]]$opt$convergence))
+      snn = c(fit.nn[[2]]$mu, fit.nn[[2]]$tau, rep(NA,2),
+              cv = ifelse(is.null(fit.nn[[2]]$opt$convergence), NA, fit.nn[[2]]$opt$convergence))
+      
+      ## initial values for GLMM
+      parset.glmm = list(
+        mu.bound = abs(set.gr$t.theta)*2,
+        tau.bound = 1,
+        eps = 1e-4,
+        integ.limit = 5, 
+        cub.tol = 1e-3,
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
+      )
+      
+      fit.bn = lapply(
+        list(lpdata, lsdata), 
+        function(data) with(data, BN_GLMM_prop(y, n, parset = parset.glmm)))
+      pbn = c(fit.bn[[1]]$mu, fit.bn[[1]]$tau, rep(NA,2),
+              cv = ifelse(is.null(fit.bn[[1]]$opt$convergence), NA, fit.bn[[1]]$opt$convergence))
+      sbn = c(fit.bn[[2]]$mu, fit.bn[[2]]$tau, rep(NA,2),
+              cv = ifelse(is.null(fit.bn[[2]]$opt$convergence), NA, fit.bn[[2]]$opt$convergence))
+      
+      
+      ## adjusted models 
+      ## Copas methods initial values
+      parset.copas = list(
+        mu.bound = abs(set.gr$t.theta)*2,
+        tau.bound = 1,
+        estimate.rho = TRUE, 
+        eps = 1e-4,
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
+      )
+      ## proposed method initial values
+      parset.new = list(
+        mu.bound = abs(set.gr$t.theta)*1.5,
+        tau.bound = 1,
+        estimate.rho = TRUE, 
+        eps = 1e-4,
+        integ.limit = 5, 
+        cub.tol = 1e-3,
+        init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1))
+      )
+
+      parset.htj = list(
+      mu.bound = abs(set.gr$t.theta)*2,
+      tau.bound = 1,
+      beta.bound = 10,
+      alpha.bound = 10,
+      eps = 1e-4,
+      integ.limit = 5, 
+      cub.tol = 1e-3,
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),runif(1,-0.1,0.1)) ## initial value for mu tau and beta
+    )
+      
+      nmin = min(lsdata$n)
+      nmax = max(lsdata$n)
+      pmax = max(lsdata$wi)
+      pmin = lsdata$wi[which.min(lsdata$n)]
+      
+      p = nrow(sdata)/nrow(pdata)
+      
+      if(p==1 || nrow(sdata)==0) next else {
+
+      func_list = list(
+        function(x) with(x, 
+                         COPAS1999(yi, n, Pnmax = pmax, Pnmin = pmin,
+                                   parset=parset.copas)),
+        function(x) with(x, 
+                         COPAS2000(yi, vi, Psemax = pmax, Psemin = pmin,
+                                   parset=parset.copas)),
+        function(x) with(x,
+                         COPAS_BNGLMM_prop(y, n, Pnmax = pmax, Pnmin = pmin,
+                                           n_min = nmin, n_max = nmax,
+                                           parset=parset.new)),
+        function(x) with(x,
+                         HTJ_BNGLMM_prop(y, n, p, parset=parset.htj))
+        
+      )
+      
+      adj.list = suppressWarnings(lapply(func_list, function(f) f(lsdata)))
+      
+      copas99 = c(adj.list[[1]]$mu, adj.list[[1]]$tau, adj.list[[1]]$rho,
+                  cv = ifelse(is.null(adj.list[[1]]$opt$convergence), NA, adj.list[[1]]$opt$convergence))
+      copas20 = c(adj.list[[2]]$mu, adj.list[[2]]$tau,adj.list[[2]]$rho,
+                  cv = ifelse(is.null(adj.list[[2]]$opt$convergence), NA, adj.list[[2]]$opt$convergence))
+      adjbn   = c(adj.list[[3]]$mu, adj.list[[3]]$tau,adj.list[[3]]$rho,
+                  cv = ifelse(is.null(adj.list[[3]]$opt$convergence), NA, adj.list[[3]]$opt$convergence))
+      htjbn   = c(adj.list[[4]]$mu, adj.list[[4]]$tau, rep(NA,2),
+                  cv = ifelse(is.null(adj.list[[4]]$opt$convergence), NA, adj.list[[4]]$opt$convergence))
+
+      res.est = rbind(pnn,pbn,snn,sbn,copas99,copas20,adjbn, htjbn)
+
+      }
+      
+      res = cbind(res.est,
+                  p.prop=c(p.small,rep(NA,7)),
+                  s.prop=c(s.small,rep(NA,7)),
+                  n.pub=c(nrow(sdata),rep(NA,7)), ##
+                  p.pub=c(p,rep(NA,7)))
+      res
+      
+    }
+    save(DATA,file = paste0("res-1GBN-mis1/data-set-",i,"-S",S,".RData"))
+    message(paste0("Finish-1GBN-mis1-",S,"-",i))
+  }}
+
+
+parallel::stopCluster(cl)
+message(paste0("Finish",Sys.time()))
+
+sink(type = "message")
+# close(msg_file)
+sink()
