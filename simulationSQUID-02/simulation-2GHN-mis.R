@@ -25,7 +25,7 @@ set.int.lmt = 10
 set.cub.tol = 1e-4
 
 set.cutoff=c(0.01,0.05,0.1)
-set.wi=c(0.99, 0.99, 0.4, 0.3)
+set.wi=c(0.99, 0.8, 0.4, 0.3)
 
 set.tau.bound = 2
 set.mu.bound = abs(-2)*3
@@ -172,8 +172,8 @@ for(i in 1:nrow(set)){
     
     nmin = min(lsdata$n)
     nmax = max(lsdata$n)
-    pmax = lsdata$wi[which.max(lsdata$n)]
-    pmin = lsdata$wi[which.min(lsdata$n)]
+    pmax = 0.99
+    pmin = 0.3
     p = nrow(sdata)/nrow(pdata)
     
     if(p==1 || nrow(sdata)==0) next else {
