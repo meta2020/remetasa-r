@@ -20,7 +20,7 @@ nset=6
 
 for(i in c(1:3,7:9)){
   
-  load(paste0("res-1GBN-mis1-test/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-1GBN-mis/data-set-",i,"-S",S,".RData"))
   rtimes = dim(DATA)[1]/8
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(12, 8, rtimes),

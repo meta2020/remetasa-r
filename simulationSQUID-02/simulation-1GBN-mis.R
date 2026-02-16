@@ -14,8 +14,8 @@ sapply(paste0("Rfn/", file.sources), source)
 load("scenarios/set.RData")
 
 rtimes=1000
-set.cutoff=c(0.001,0.005,0.01,0.05) ## <0.05, <0.1, others
-set.wi=c(0.99,0.8, 0.6, 0.5,0.3,0.3)
+set.cutoff=c(0.001,0.025,0.01,0.05) ## <0.05, <0.1, others
+set.wi=c(0.9, 0.9, 0.2, 0.2, 0.2)
 
 ## SIMULATION 
 ncores = min(120, parallel::detectCores())
@@ -131,12 +131,14 @@ for(i in c(1:3,7:9)){
       init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),runif(1,-0.1,0.1)) ## initial value for mu tau and beta
     )
       
+      pmax = 0.9 #max(lsdata$wi)
+      
+      
       nmin = min(lsdata$n)
       nmax = max(lsdata$n)
-      pmax = max(lsdata$wi)
-      pmin = lsdata$wi[which.min(lsdata$n)]
       
       p = nrow(sdata)/nrow(pdata)
+      pmin = mean(lpdata$wi)  #min(lsdata$wi)
       
       if(p==1 || nrow(sdata)==0) next else {
 
@@ -179,7 +181,7 @@ for(i in c(1:3,7:9)){
       res
       
     }
-    save(DATA,file = paste0("res-1GBN-mis1/data-set-",i,"-S",S,".RData"))
+    save(DATA,file = paste0("res-1GBN-mis/data-set-",i,"-S",S,".RData"))
     message(paste0("Finish-1GBN-mis1-",S,"-",i))
   }}
 

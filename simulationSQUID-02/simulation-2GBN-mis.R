@@ -1,7 +1,7 @@
 ##
 ## Compare all methods based on BN model data generating process (Add Hu et al.)
 ##
-log.name = paste0("log-mis1-1GBN",as.numeric(Sys.time()),".txt")
+log.name = paste0("log-mis1-2GBN",as.numeric(Sys.time()),".txt")
 sink(log.name)
 msg_file = file(log.name, open="at")
 sink(msg_file, type = "message")
@@ -24,8 +24,8 @@ set.eps = 1e-4
 set.int.lmt = 10
 set.cub.tol = 1e-4
 
-set.cutoff=c(0.01,0.05,0.1)
-set.wi=c(0.99, 0.8, 0.4, 0.3)
+set.cutoff=c(0.01,0.05,0.1,0.5)
+set.wi=c(0.99, 0.8, 0.6, 0.4, 0.4)
 
 set.tau.bound = 2
 set.mu.bound = abs(-2)*3
@@ -86,8 +86,8 @@ for(i in 1:nrow(set)){
         mu.bound = set.mu.bound, 
         tau.bound = set.tau.bound,
         eps = set.eps,
-        init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                      set.gr$t.tau  +round(runif(1,-0.2,0.2),2))
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.1,0.1),2),
+                      set.gr$t.tau  +round(runif(1,-0.1,0.1),2))
         )
       
       ## estimation without/with PB: NN, HN-GLMM, BN-GLMM on pdata and sdata
@@ -107,8 +107,8 @@ for(i in 1:nrow(set)){
         eps = set.eps,
         integ.limit = set.int.lmt, 
         cub.tol = set.cub.tol,
-        init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                      set.gr$t.tau  +round(runif(1,-0.2,0.2),2))
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.1,0.1),2),
+                      set.gr$t.tau  +round(runif(1,-0.1,0.1),2))
         )
       
       fit.hn = lapply(
@@ -135,9 +135,9 @@ for(i in 1:nrow(set)){
         tau.bound = set.tau.bound,
         estimate.rho = TRUE, 
         eps = set.eps,
-        init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                      set.gr$t.tau  +round(runif(1,-0.2,0.2),2), 
-                      set.gr$t.rho  +round(runif(1,-0.2,0.1),2)) ## initials for mu tau and rho
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.1,0.1),2),
+                      set.gr$t.tau  +round(runif(1,-0.1,0.1),2), 
+                      set.gr$t.rho  +round(runif(1,-0.1,0.1),2)) ## initials for mu tau and rho
       )
       ## proposed method initial values
       parset.new = list(
@@ -147,9 +147,9 @@ for(i in 1:nrow(set)){
         eps = set.eps,
         integ.limit = set.int.lmt, 
         cub.tol = set.cub.tol,
-        init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                      set.gr$t.tau  +round(runif(1,-0.2,0.2),2), 
-                      set.gr$t.rho  +round(runif(1,-0.2,0.1),2))
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.1,0.1),2),
+                      set.gr$t.tau  +round(runif(1,-0.1,0.1),2), 
+                      set.gr$t.rho  +round(runif(1,-0.1,0.1),2))
       )
       
       parset.htj = list(
@@ -160,15 +160,15 @@ for(i in 1:nrow(set)){
         eps = set.eps,
         integ.limit = set.int.lmt, 
         cub.tol = set.cub.tol,
-        init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                      set.gr$t.tau  +round(runif(1,-0.2,0.2),2),  
+        init.vals = c(set.gr$t.theta+round(runif(1,-0.1,0.1),2),
+                      set.gr$t.tau  +round(runif(1,-0.1,0.1),2),  
                       round(runif(1,0.5,1),2)) ## initial value for mu tau and beta
       )
       
       nmin = min(lsdata$n)
       nmax = max(lsdata$n)
-      pmax = 0.99
-      pmin = 0.3
+      pmax = max(lsdata$wi)
+      pmin = min(lsdata$wi)
       p = nrow(sdata)/nrow(pdata)
     
     if(p==1 || nrow(sdata)==0) next else {

@@ -24,8 +24,8 @@ set.eps = 1e-4
 set.int.lmt = 10
 set.cub.tol = 1e-4
 
-set.cutoff=c(0.01,0.05,0.1)
-set.wi=c(0.99, 0.8, 0.4, 0.3)
+set.cutoff=c(0.01,0.03,0.05,0.1)
+set.wi=c(0.9, 0.8, 0.7, 0.5, 0.5)
 
 set.tau.bound = 2
 set.mu.bound = abs(-2)*3
@@ -170,10 +170,13 @@ for(i in 1:nrow(set)){
                     round(runif(1,0.5,1),2)) ## initial value for mu tau and beta
     )
     
-    nmin = min(lsdata$n)
-    nmax = max(lsdata$n)
-    pmax = 0.99
-    pmin = 0.3
+    # nmin = min(lsdata$n)
+    # nmax = max(lsdata$n)
+    pmax = max(lsdata$wi)
+    pmin = min(lsdata$wi)
+    nmin = lsdata$n[which.min(lsdata$wi)]
+    nmax = lsdata$n[which.max(lsdata$wi)]
+    
     p = nrow(sdata)/nrow(pdata)
     
     if(p==1 || nrow(sdata)==0) next else {

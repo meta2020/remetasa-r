@@ -8,8 +8,8 @@ gendata.2bn.hedges = function(
     gr,
     theta,tau,rho,
     Pnmax, Pnmin,
-    cutoff=c(0.01,0.05,0.1,0.2), ## <0.05, <0.1, others
-    wi=c(1,1,0.5,0.3,1)){     ## 1,0.5,0.3
+    cutoff, ## <0.05, <0.1, others
+    wi){     ## 1,0.5,0.3
   
     n = runif( s, min = n_min, max = n_max )
     n = ifelse(n<20,20,n)

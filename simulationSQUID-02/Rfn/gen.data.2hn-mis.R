@@ -9,8 +9,8 @@ gendata.2hn.hedges = function(
     theta,tau,rho,
     y_min,y_max,
     Pnmax, Pnmin,
-    cutoff=c(0.01,0.05,0.1), ## <0.05, <0.1, others
-    wi=c(1,1,0.5,0.3)){
+    cutoff, ## <0.05, <0.1, others
+    wi){
   
   n = runif( s, min = n_min, max = n_max )
   n = ifelse(n<20,20,n)
@@ -38,7 +38,10 @@ gendata.2hn.hedges = function(
   p.dt2 = escalc(measure="OR", ai=y1, bi=n1-y1, ci=y0, di=n0-y0, data = p.dt) %>% 
       mutate(ti=yi/sqrt(vi)) %>%
       mutate(pvalue = 2*pnorm(abs(ti), lower.tail = FALSE)) %>%
-      mutate(wi=ifelse(pvalue<cutoff[1], wi[1], ifelse(pvalue<cutoff[2], wi[2], ifelse(pvalue<cutoff[3], wi[3], wi[4]))))
+      mutate(wi=ifelse(pvalue<cutoff[1], wi[1], 
+                      ifelse(pvalue<cutoff[2], wi[2], 
+                             ifelse(pvalue<cutoff[3], wi[3],
+                                    ifelse(pvalue<cutoff[4], wi[3], wi[5])))))
     
   z=rbinom(nrow(p.dt),1, p.dt2$wi)
   s.dt=p.dt2[z>0,]
