@@ -119,11 +119,6 @@ COPAS_HNGLMM = function(
              lower = c(-parset[["mu.bound"]], parset[["eps"]]),
              upper = c( parset[["mu.bound"]], parset[["tau.bound"]])
              ),
-      # optim(parset[["init.vals"]], llk.fix.rho,
-      #       method = "L-BFGS-B",
-      #        lower = c(-parset[["mu.bound"]], parset[["eps"]]),
-      #        upper = c( parset[["mu.bound"]], parset[["tau.bound"]])
-      # ),
       silent = TRUE)
     
     
@@ -276,12 +271,7 @@ COPAS_BNGLMM = function(
     optim.res = try(
       nlminb(parset[["init.vals"]], llk.fix.rho,
              lower = c(-parset[["mu.bound"]], parset[["eps"]]),
-             upper = c( parset[["mu.bound"]], parset[["tau.bound"]])),
-      # optim(parset[["init.vals"]], llk.fix.rho,
-      #       method = "L-BFGS-B",
-      #       lower = c(-parset[["mu.bound"]], parset[["eps"]]),
-      #       upper = c( parset[["mu.bound"]], parset[["tau.bound"]])
-      # ),
+             upper = c( parset[["mu.bound"]], parset[["tau.bound"]])), 
       silent = TRUE)
     
     if(!inherits(optim.res, "try-error")) {

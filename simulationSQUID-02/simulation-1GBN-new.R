@@ -12,8 +12,6 @@ file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 load("scenarios/set.RData")
 
-rtimes=1000
-
 
 ## SIMULATION 
 ncores = min(120, parallel::detectCores())

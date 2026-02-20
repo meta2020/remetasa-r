@@ -22,12 +22,14 @@ set$nmin = ifelse(set$n.median==20,30,ifelse(set$n.median==50,50,500))
 set$nmax = ifelse(set$n.median==20,60,ifelse(set$n.median==50,200,700))
 set$p0 = ifelse(set$n.median==20,0.2,ifelse(set$n.median==50,0.1,0.002))
 
+file.sources = list.files("Rfn/")
+sapply(paste0("Rfn/", file.sources), source)
 
 ##
 ## calculate alpha in P(alpha+beta*t), beta=2 by Hu et al (2024)
 ##
 
-beta=2
+beta=-2
 fa = function(alpha) mean(pnorm(alpha + beta*ti)) -0.7
 
 rtimes = 1000

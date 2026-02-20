@@ -13,16 +13,6 @@ file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 load("scenarios/set.RData")
 
-rtimes=1000
-
-set.eps = 1e-4
-set.int.lmt = 10
-set.cub.tol = 1e-4
-
-
-set.tau.bound = 2
-set.mu.bound = abs(-2)*3
-
 ## SIMULATION  ----------------------------------
 ncores = min(120, parallel::detectCores()-1)
 cl = parallel::makeCluster(ncores, "SOCK")
@@ -128,7 +118,7 @@ for(i in 1:nrow(set)) { #
       )
       ## proposed method initial values
       parset.new = list(
-        mu.bound = set.mu.bound.5,
+        mu.bound = set.mu.bound,
         tau.bound = set.tau.bound,
         estimate.rho = TRUE, 
         eps = set.eps,
