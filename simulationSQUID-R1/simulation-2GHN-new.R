@@ -1,7 +1,7 @@
 ##
 ## Compare all methods based on HN model data generating process (Add Hu et al.)
 ##
-log.name = paste0("log-mis1-2GHN",as.numeric(Sys.time()),".txt")
+log.name = paste0("log-new-2GHN",as.numeric(Sys.time()),".txt")
 sink(log.name)
 msg_file = file(log.name, open="at")
 sink(msg_file, type = "message")
@@ -9,15 +9,24 @@ sink(msg_file, type = "message")
 
 rm(list=ls())
 
-## load functions and settings
 file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
-
-## load scenarios
 load("scenarios/set.RData")
 
+rtimes=1000
+
+set.eps = 1e-4
+set.int.lmt = 10
+set.cub.tol = 1e-4
+
+set.cutoff=c(0.01,0.05,0.1)
+set.wi=c(1,1, 0.5, 0.4)
+
+set.tau.bound = 2
+set.mu.bound = abs(-2)*3
+
 ## SIMULATION  ----------------------------------
-ncores = min(120, parallel::detectCores())
+ncores = min(120, parallel::detectCores()-1)
 cl = parallel::makeCluster(ncores, "SOCK")
 doSNOW::registerDoSNOW(cl)
 
@@ -26,10 +35,10 @@ message(paste0("Start",Sys.time()))
 
 set.seed(2025)
 for(S in s){
-for(i in 1:nrow(set)){ 
+for(i in 1:nrow(set)) { #
+
 
 ##-- Simulation 1: HN model based -------
-
 
   DATA = foreach(r=1:rtimes, .combine = rbind,.packages=c("mnormt","dplyr","metafor"), .errorhandling = "remove")  %dorng%  {
 
@@ -38,15 +47,15 @@ for(i in 1:nrow(set)){
     pmin = set.gr$pmin
     
     ## create datasets
-    plist = gendata.2hn.se(
+    plist = gendata.2hn(
       s=S, 
       n_min = set.gr$nmin, n_max=set.gr$nmax,
       gr=set.gr$grp.r,
       theta=set.gr$t.theta,
       tau=set.gr$t.tau,
       rho=set.gr$t.rho,
-      y_min=set.gr$ymin, y_max=set.gr$ymax,
-      Psemax = pmax, Psemin = pmin) ## weight=1,0.5,0.3
+      y_min=set.gr$ymin,y_max=set.gr$ymax,
+      Pnmax = pmax, Pnmin = pmin)
 
     
     ## selected data and population data
@@ -59,7 +68,6 @@ for(i in 1:nrow(set)){
     )
     lpdata = data[[1]]
     lsdata = data[[2]]
-
     
     ## proportion of rare events
     p.small = lpdata %>%summarise(prop = mean(y1 <=3 | y0 <=3))%>%c()
@@ -72,8 +80,7 @@ for(i in 1:nrow(set)){
       mu.bound = set.mu.bound, 
       tau.bound = set.tau.bound,
       eps = set.eps,
-      init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                    set.gr$t.tau  +round(runif(1,-0.2,0.2),2))
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
     )
     
     ## estimation without/with PB: NN, HN-GLMM, BN-GLMM on pdata and sdata
@@ -93,9 +100,8 @@ for(i in 1:nrow(set)){
       eps = set.eps,
       integ.limit = set.int.lmt, 
       cub.tol = set.cub.tol,
-      init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                    set.gr$t.tau  +round(runif(1,-0.2,0.2),2))
-      )
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1))
+    )
     
     fit.hn = lapply(
       list(lpdata, lsdata), 
@@ -121,9 +127,7 @@ for(i in 1:nrow(set)){
     tau.bound = set.tau.bound,
     estimate.rho = TRUE, 
     eps = set.eps,
-    init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                  set.gr$t.tau  +round(runif(1,-0.2,0.2),2), 
-                  set.gr$t.rho  +round(runif(1,-0.2,0.1),2)) ## initials for mu tau and rho
+    init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
     )
     ## proposed method initial values
     parset.new = list(
@@ -133,9 +137,7 @@ for(i in 1:nrow(set)){
       eps = set.eps,
       integ.limit = set.int.lmt, 
       cub.tol = set.cub.tol,
-      init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                    set.gr$t.tau  +round(runif(1,-0.2,0.2),2), 
-                    set.gr$t.rho  +round(runif(1,-0.2,0.1),2)) ## initials for mu tau and rho
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1),set.gr$t.rho+runif(1,-0.1,0.1)) ## initials for mu tau and rho
     )
     
     ## HTJ method initial values
@@ -143,22 +145,17 @@ for(i in 1:nrow(set)){
       mu.bound = set.mu.bound,
       tau.bound = set.tau.bound,
       beta.bound = 5,
-      alpha.bound = 10,
+      alpha.bound = 5,
       eps = set.eps,
       integ.limit = set.int.lmt, 
       cub.tol = set.cub.tol,
-      init.vals = c(set.gr$t.theta+round(runif(1,-0.2,0.2),2),
-                    set.gr$t.tau  +round(runif(1,-0.2,0.2),2), 
-                    round(runif(1,0.5,1),2)) ## initial value for mu tau and beta
+      init.vals = c(set.gr$t.theta+runif(1,-0.1,0.1),set.gr$t.tau+runif(1,-0.1,0.1), runif(1,0.1,0.2)) ## initial value for mu tau and beta
     )
     
     nmin = min(lsdata$n)
     nmax = max(lsdata$n)
-    pmax = max(lsdata$wi)
-    pmin = min(lsdata$wi)
-    
     p = nrow(sdata)/nrow(pdata)
-    
+ 
     if(p==1 || nrow(sdata)==0) next else {
       
       func_list = list(
@@ -173,12 +170,12 @@ for(i in 1:nrow(set)){
                          COPAS_BNGLMM(y0, y1, n0, n1, Pnmax = pmax, Pnmin = pmin,
                                       n_min = nmin, n_max = nmax, parset=parset.new)),
         function(x) with(x,
-                         HTJ_HNGLMM(y0, y1, n0, n1, p=p, parset=parset.htj)),
+                         HTJ_HNGLMM(y0, y1, n0, n1, p, parset=parset.htj)),
         function(x) with(x,
-                         HTJ_BNGLMM(y0, y1, n0, n1, p=p, parset=parset.htj))
+                         HTJ_BNGLMM(y0, y1, n0, n1, p, parset=parset.htj))
       )
       
-      adj.list = suppressWarnings(lapply(func_list, function(f) f(lsdata)))
+      adj.list = lapply(func_list, function(f) f(lsdata))
       
       copas99 = c(adj.list[[1]]$mu, adj.list[[1]]$tau,adj.list[[1]]$rho,
                   cv = ifelse(is.null(adj.list[[1]]$opt$convergence), NA, adj.list[[1]]$opt$convergence))
@@ -188,9 +185,9 @@ for(i in 1:nrow(set)){
                   cv = ifelse(is.null(adj.list[[3]]$opt$convergence), NA, adj.list[[3]]$opt$convergence))
       adjbn   = c(adj.list[[4]]$mu, adj.list[[4]]$tau,adj.list[[4]]$rho,
                   cv = ifelse(is.null(adj.list[[4]]$opt$convergence), NA, adj.list[[4]]$opt$convergence))
-      htjhn   = c(adj.list[[5]]$mu, adj.list[[5]]$tau, NA, NA,
+      htjhn   = c(adj.list[[5]]$mu, adj.list[[5]]$tau, rep(NA,2),
                   cv = ifelse(is.null(adj.list[[5]]$opt$convergence), NA, adj.list[[5]]$opt$convergence))
-      htjbn   = c(adj.list[[6]]$mu, adj.list[[6]]$tau, NA, NA,
+      htjbn   = c(adj.list[[6]]$mu, adj.list[[6]]$tau, rep(NA,2),
                   cv = ifelse(is.null(adj.list[[6]]$opt$convergence), NA, adj.list[[6]]$opt$convergence))
       
       
@@ -198,22 +195,25 @@ for(i in 1:nrow(set)){
                       snn,shn,sbn,
                       copas99,copas20,
                       adjhn,adjbn,
-                      htjhn, htjbn
-                      )
+                      htjhn, htjbn)
       
     }
     
+    
+    
     res = cbind(res.est,
-                p.prop=c(p.small, rep(NA,11)),
+                p.prop=c(p.small, rep(NA,11)), ## prop of small studies
                 s.prop=c(s.small, rep(NA,11)),
                 n.pub=c(nrow(sdata), rep(NA,11)),
-                p.pub=c(p, rep(NA,11)))
+                p.sen=c(p, rep(NA,11))
+                )
 
     res
 
   }
-  save(DATA,file = paste0("res-2GHN-mis3/data-set-",i,"-S",S,".RData"))
-  message(paste0("Finish-2GHN-mis1-",S,"-",i,":",Sys.time()))
+  save(DATA,file = paste0("res-2GHN-new/data-set-",i,"-S",S,".RData"))
+  message(paste0("Finish-2GHN-new-",S,"-",i,":",Sys.time()))
+
 
 }}
 
@@ -222,5 +222,4 @@ parallel::stopCluster(cl)
 message(paste0("Finish",Sys.time()))
 
 sink(type = "message")
-# close(msg_file)
 sink()

@@ -17,7 +17,7 @@ cv.sum=NULL
 
 nset=nrow(set)
 for(i in 1:nset){
-  load(paste0("res-2GHN-mis1/data-set-",i,"-S",S,".RData"))
+  load(paste0("res-2GBN-mis1/data-set-",i,"-S",S,".RData"))
   rtimes = (dim(DATA)/12)[1]
   DATA0 = DATA %>% t()%>% as.numeric() %>% 
     array(., dim = c(12, 12, rtimes),
@@ -109,7 +109,7 @@ tDF.all=rbind.data.frame(sum.tab(15)[[3]], sum.tab(50)[[3]])
 
 
 DF.all%>%kbl(., 
-         format = "html",
+         format = "latex",
          longtable = F, 
          booktabs = T, 
          # col.names = c("$S$","Patients","T:C","$\\tau^2$","$N$",

@@ -1,7 +1,7 @@
 ##
 ## Compare all methods based on HN model data generating process (Add Hu et al.)
 ##
-log.name = "log-new-2G.txt"
+log.name = paste0("log-new-2GBN",as.numeric(Sys.time()),".txt")
 sink(log.name)
 msg_file = file(log.name, open="at")
 sink(msg_file, type = "message")
@@ -13,13 +13,24 @@ file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 load("scenarios/set.RData")
 
+rtimes=1000
+
+set.eps = 1e-4
+set.int.lmt = 10
+set.cub.tol = 1e-4
+
+set.cutoff = c(0.01,0.05,0.1)
+set.wi = c(1,1, 0.5, 0.4)
+
+set.tau.bound = 2
+set.mu.bound = abs(-2)*3
+
 ## SIMULATION  ----------------------------------
 ncores = min(120, parallel::detectCores()-1)
 cl = parallel::makeCluster(ncores, "SOCK")
 doSNOW::registerDoSNOW(cl)
 
 message(paste0("Start",Sys.time()))
-
 
 set.seed(2025)
 for(S in s){

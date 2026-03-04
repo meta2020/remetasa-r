@@ -1,7 +1,7 @@
 ##
 ## Compare all methods based on HN model data generating process (Add Hu et al.)
 ##
-log.name = paste0("log-mis1-1GBN",as.numeric(Sys.time()),".txt")
+log.name = paste0("log-mis-1GBN",as.numeric(Sys.time()),".txt")
 sink(log.name)
 msg_file = file(log.name, open="at")
 sink(msg_file, type = "message")
@@ -13,7 +13,7 @@ file.sources = list.files("Rfn/")
 sapply(paste0("Rfn/", file.sources), source)
 load("scenarios/set.RData")
 
-
+rtimes=1000
 set.cutoff=c(0.001,0.005,0.01,0.05) ## <0.05, <0.1, others
 set.wi=c(0.9, 0.8, 0.7, 0.6, 0.3)
 
@@ -132,8 +132,8 @@ for(i in c(1:3,7:9)){
       nmin = min(lsdata$n)
       nmax = max(lsdata$n)
       p = nrow(sdata)/nrow(pdata)
-      pmax = max(lsdata$wi)
-      pmin = min(lsdata$wi)
+      pmax = max(lpdata$wi)
+      pmin = min(lpdata$wi)
       
       if(p==1 || nrow(sdata)==0) next else {
 
@@ -177,7 +177,7 @@ for(i in c(1:3,7:9)){
       
     }
     save(DATA,file = paste0("res-1GBN-mis1/data-set-",i,"-S",S,".RData"))
-    message(paste0("Finish-1GBN-mis1-",S,"-",i))
+    message(paste0("Finish-1GBN-mis-",S,"-",i))
   }}
 
 

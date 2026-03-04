@@ -28,8 +28,8 @@ message(paste0("Start",Sys.time()))
 
 
 set.seed(2025)
-for(S in s){
-for(i in 1:nrow(set)){ 
+for(S in s[2]){
+for(i in 12:nrow(set)){ 
 
 ##-- Simulation 2: 2-group binomial model based -------
 
