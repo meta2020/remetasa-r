@@ -115,7 +115,7 @@ tDF.all=rbind.data.frame(sum.tab2(15)[[3]], sum.tab2(50)[[3]])
 
 
 DF.all%>%kbl(., 
-         format = "html",
+         format = "latex",
          longtable = F, 
          booktabs = T, 
          col.names = c("$S$","Patients","$\\tau^2$","$N$",
