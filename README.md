@@ -1,4 +1,4 @@
-## [Reproducible results with R codes] 
+## [Reproducible results with R codes]
 
 # Copas-Heckman-type sensitivity analysis for publication bias in rare-event meta-analysis under the framework of generalized linear mixed model
 
@@ -19,9 +19,11 @@ If they are not installed, please install from R CRAN `install.packages("package
 - Reproducible R coeds are in folder \application
 
 
-## R codes for simulation
+## R codes for simulation (original submission)
 
 - Reproducible R coeds are in folder \simulationSQUID
 
 
+## R codes for simulation (revised)
 
+- Reproducible R coeds are in folder \simulationSQUID-R1
