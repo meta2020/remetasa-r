@@ -22,8 +22,8 @@ set$nmin = ifelse(set$n.median==20,30,ifelse(set$n.median==50,50,500))
 set$nmax = ifelse(set$n.median==20,60,ifelse(set$n.median==50,200,700))
 set$p0 = ifelse(set$n.median==20,0.2,ifelse(set$n.median==50,0.1,0.002))
 
-file.sources = list.files("Rfn/")
-sapply(paste0("Rfn/", file.sources), source)
+file.sources = list.files("../Rfn/")
+sapply(paste0("../Rfn/", file.sources), source)
 
 
 
