@@ -1,5 +1,10 @@
 ## [Reproducible results with R codes]
 
+## Citation
+
+Zhou Y, Hu T, Sakamoto Y, Huang A, Zhou XH, Hattori S. Copas‐Heckman‐Type Sensitivity Analysis for Publication Bias in Rare‐Event Meta‐Analysis Under Generalized Linear Mixed Models. Stat Med. 2026;45(10-12). [doi:10.1002/sim.70595](doi:10.1002/sim.70595)
+
+-------
 # Copas-Heckman-type sensitivity analysis for publication bias in rare-event meta-analysis under the framework of generalized linear mixed model
 
 
